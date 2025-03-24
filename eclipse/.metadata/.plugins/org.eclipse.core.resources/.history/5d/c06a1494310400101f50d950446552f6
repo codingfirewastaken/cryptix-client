@@ -1,0 +1,7 @@
+package cryptix.module.visual;
+
+import cryptix.module.Module;
+
+public class BedESP extends Module{
+
+}
