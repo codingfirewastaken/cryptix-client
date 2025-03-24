@@ -64,6 +64,11 @@ public class Scaffold extends Module{
 	@Override
 	public void onPreMotion() {
 		sprint();
+		if(getRotations()[0] != 0 && getRotations()[1] != 0) {
+			mc.thePlayer.rotationYawHead = getRotations()[0];
+			mc.thePlayer.renderYawOffset = getRotations()[2] == 0 ? mc.thePlayer.rotationYawHead + 45 : getRotations()[2];
+			mc.thePlayer.rotationPitchHead = getRotations()[1];
+		}
 		if (this.shouldPlaceBlock()) {
             this.place();
         }
@@ -71,11 +76,6 @@ public class Scaffold extends Module{
 			tower();
 		}else {
 			towerTick = 1;
-		}
-		if(getRotations()[0] != 0 && getRotations()[1] != 0) {
-			mc.thePlayer.rotationYawHead = getRotations()[0];
-			mc.thePlayer.renderYawOffset = getRotations()[2] == 0 ? mc.thePlayer.rotationYawHead + 45 : getRotations()[2];
-			mc.thePlayer.rotationPitchHead = getRotations()[1];
 		}
 	}
 	
@@ -96,28 +96,36 @@ public class Scaffold extends Module{
 			}
 		}
 		if(tower.getString().equalsIgnoreCase("3 tick")) {
-			towerTick++;
-			if (towerTick == 2) {
-			    mc.thePlayer.motionY = 0.42f;
-			    MovementUtils.strafe(towerSpeed.getValue() / 10);
+			if(towerTick == 4) {
+				mc.thePlayer.motionY = 0.42f;
+				MovementUtils.strafe(towerSpeed.getValue() / 10);
+				towerTick = 0;
 			}
-			if (towerTick == 3) {
-			    mc.thePlayer.motionY = 0.33f;
-			}
-			if (towerTick == 4) {
-			    towerTick = 0;
-			}
-		}
-		if(tower.getString().equalsIgnoreCase("2 tick")) {
-			towerTick++;
 			if(towerTick == 1) {
+				mc.thePlayer.motionY = 0.33f;
+			}
+			if(towerTick == 2) {
+				mc.thePlayer.motionY = 1 - mc.thePlayer.posY % 1f;
+			}
+			if(towerTick == 3) {
+				mc.thePlayer.motionY = 0;
+			}
+			if(mc.thePlayer.onGround) {
 				mc.thePlayer.motionY = 0.42f;
 				MovementUtils.strafe(towerSpeed.getValue() / 10);
 			}
-			if(towerTick == 2) {
+			towerTick++;
+		}
+		if(tower.getString().equalsIgnoreCase("2 tick")) {
+			towerTick++;
+			if(Math.round(mc.thePlayer.posY % 1.0f) == 0) {
+				mc.thePlayer.motionY = 0.42f;
+				MovementUtils.strafe(towerSpeed.getValue() / 10);
+			}
+			if(Math.round(mc.thePlayer.posY % 1.0f) == 0.42) {
 				mc.thePlayer.motionY = 0.33f;
 			}
-			if(towerTick == 3) {
+			if(Math.round(mc.thePlayer.posY % 1.0f) == 0.75) {
 				mc.thePlayer.motionY = 1 - mc.thePlayer.posY % 1f;
 				towerTick = 0;
 			}
@@ -151,7 +159,6 @@ public class Scaffold extends Module{
 					sprinting = true;
 					if(mc.thePlayer.onGround) {
 						mc.thePlayer.jump();
-						mc.thePlayer.motionY = 0.419;
 					}
 					mc.thePlayer.setSprinting(true);
 					KeyBinding.setKeyBindState(mc.gameSettings.keyBindSprint.getKeyCode(), true);
@@ -203,33 +210,54 @@ public class Scaffold extends Module{
 			case "side":
 				final float playerYaw = RotationUtils.getMovementYaw() ;
 				yaw = playerYaw + 45;
-	            //10 degree
+				Block block = mc.theWorld.getBlockState(getTargetBlockPos()).getBlock();
 	            if(playerYaw > 0 && playerYaw < 10 || playerYaw > 270 && playerYaw < 280 || playerYaw > 180 && playerYaw < 190 || playerYaw > 90 && playerYaw < 100) {
-	                yaw = playerYaw + 75;
+	                yaw = playerYaw + 70;
+	                if(block == Blocks.air && Math.random() * 2.9 > 1) {
+	                	yaw = (float) (playerYaw + 60 - Math.random() * 6);
+	                }
 	            }
 	            if(playerYaw > 350 || playerYaw < 270 && playerYaw > 260 || playerYaw < 180 && playerYaw > 170 || playerYaw < 90 && playerYaw > 80) {
-	                yaw = playerYaw - 75;
+	                yaw = playerYaw - 70;
+	                if(block == Blocks.air && Math.random() * 2.9 > 1) {
+	                	yaw = (float) (playerYaw - 60 + Math.random() * 6);
+	                }
 	            }
-	            //20 degree
 	            if(playerYaw > 10 && playerYaw < 20 || playerYaw > 280 && playerYaw < 290 || playerYaw > 190 && playerYaw < 200 || playerYaw > 100 && playerYaw < 110) {
 	                yaw = playerYaw + 60;
+	                if(block == Blocks.air && Math.random() * 3 > 1) {
+	                	yaw = (float) (playerYaw + 50 - Math.random() * 7);
+	                }
 	            }
 	            if(playerYaw < 350 && playerYaw > 340 || playerYaw < 260 && playerYaw > 250 || playerYaw < 170 && playerYaw > 160 || playerYaw < 80 && playerYaw > 70) {
 	                yaw = playerYaw - 60;
+	                if(block == Blocks.air && Math.random() * 3 > 1) {
+	                	yaw = (float) (playerYaw - 50 + Math.random() * 7);
+	                }
 	            }
-	            //30 degree
 	            if(playerYaw > 20 && playerYaw < 30 || playerYaw > 290 && playerYaw < 300 || playerYaw > 200 && playerYaw < 210 || playerYaw > 110 && playerYaw < 120) {
 	                yaw = playerYaw + 52;
+	                if(block == Blocks.air && Math.random() * 3 > 1) {
+	                	yaw = (float) (playerYaw + 45 - Math.random() * 8);
+	                }
 	            }
 	            if(playerYaw < 340 && playerYaw > 330 || playerYaw < 250 && playerYaw > 240 || playerYaw < 160 && playerYaw > 150 || playerYaw < 70 && playerYaw > 60) {
 	                yaw = playerYaw - 52;
+	                if(block == Blocks.air && Math.random() * 3 > 1) {
+	                	yaw = (float) (playerYaw - 45 + Math.random() * 8);
+	                }
 	            }
-	            //40 degree
 	            if(playerYaw > 30 && playerYaw < 40 || playerYaw > 300 && playerYaw < 312 || playerYaw > 212 && playerYaw < 220 || playerYaw > 120 && playerYaw < 130) {
-	                yaw = playerYaw + 40;
+	                yaw = playerYaw + 45;
+	                if(block == Blocks.air && Math.random() * 2.8 > 1) {
+	                	yaw = (float) (playerYaw + 45 - Math.random() * 7);
+	                }
 	            }
 	            if(playerYaw < 330 && playerYaw > 315 || playerYaw < 240 && playerYaw > 225 || playerYaw < 150 && playerYaw > 135 || playerYaw < 60 && playerYaw > 45) {
-	                yaw = playerYaw - 40;
+	                yaw = playerYaw - 45;
+	                if(block == Blocks.air && Math.random() * 2.8 > 1) {
+	                	yaw = (float) (playerYaw - 45 + Math.random() * 7);
+	                }
 	            }
 				pitch = (float) (strictPitch < 70 ? 70 + Math.random() : strictPitch);
 				break;

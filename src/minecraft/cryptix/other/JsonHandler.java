@@ -54,9 +54,9 @@ public class JsonHandler {
 
                 JsonObject jsonSettings = new JsonObject();
                 for (Setting setting : mod.getSettings()) {
-                    if (setting.isCombo()) {
+                    if (setting.isModeBox()) {
                         jsonSettings.addProperty(setting.getName(), Client.instance.settingsManager.getSettingByName(mod, setting.getName()).getString());
-                    } else if (setting.isCheck()) {
+                    } else if (setting.isCheckBox()) {
                         jsonSettings.addProperty(setting.getName(), Client.instance.settingsManager.getSettingByName(mod, setting.getName()).getBoolean());
                     } else if (setting.isSlider()) {
                         jsonSettings.addProperty(setting.getName(), Client.instance.settingsManager.getSettingByName(mod, setting.getName()).getValue());
@@ -99,9 +99,9 @@ public class JsonHandler {
                 jsonMod.addProperty("enabled", mod.isToggled());
                 JsonObject jsonSettings = new JsonObject();
                 for (Setting setting : mod.getSettings()) {
-                    if (setting.isCombo()) {
+                    if (setting.isModeBox()) {
                         jsonSettings.addProperty(setting.getName(), Client.instance.settingsManager.getSettingByName(mod, setting.getName()).getString());
-                    } else if (setting.isCheck()) {
+                    } else if (setting.isCheckBox()) {
                         jsonSettings.addProperty(setting.getName(), Client.instance.settingsManager.getSettingByName(mod, setting.getName()).getBoolean());
                     } else if (setting.isSlider()) {
                         jsonSettings.addProperty(setting.getName(), Client.instance.settingsManager.getSettingByName(mod, setting.getName()).getValue());
@@ -137,10 +137,10 @@ public class JsonHandler {
                 if (jsonSettings != null && mod.getSettings() != null) {
                     for (Setting setting : mod.getSettings()) {
                         if (jsonSettings.has(setting.getName())) {
-                            if (setting.isCombo()) {
+                            if (setting.isModeBox()) {
                                 String value = jsonSettings.get(setting.getName()).getAsString();
                                 Client.instance.settingsManager.getSettingByName(mod, setting.getName()).setString(value);
-                            } else if (setting.isCheck()) {
+                            } else if (setting.isCheckBox()) {
                                 boolean value = jsonSettings.get(setting.getName()).getAsBoolean();
                                 Client.instance.settingsManager.getSettingByName(mod, setting.getName()).setBoolean(value);
                             } else if (setting.isSlider()) {
@@ -179,10 +179,10 @@ public class JsonHandler {
                  if (jsonSettings != null && mod.getSettings() != null) {
                      for (Setting setting : mod.getSettings()) {
                          if (jsonSettings.has(setting.getName())) {
-                             if (setting.isCombo()) {
+                             if (setting.isModeBox()) {
                                  String value = jsonSettings.get(setting.getName()).getAsString();
                                  Client.instance.settingsManager.getSettingByName(mod, setting.getName()).setString(value);
-                             } else if (setting.isCheck()) {
+                             } else if (setting.isCheckBox()) {
                                  boolean value = jsonSettings.get(setting.getName()).getAsBoolean();
                                  Client.instance.settingsManager.getSettingByName(mod, setting.getName()).setBoolean(value);
                              } else if (setting.isSlider()) {

@@ -13,9 +13,9 @@ import net.minecraft.client.gui.Gui;
 
 
 public class CheckBox extends Element {
-	public CheckBox(ModuleButton iparent, Setting iset) {
-		parent = iparent;
-		set = iset;
+	public CheckBox(ModuleButton parent1, Setting setting1) {
+		parent = parent1;
+		setting = setting1;
 		super.setup();
 	}
 
@@ -27,19 +27,16 @@ public class CheckBox extends Element {
 		
 		Gui.drawRect(x - 2, y, x + 88, y + height, 0xff232323);
 
-		FontUtil.drawString(setstrg, x + 14, y + FontUtil.getFontHeight() / 2 - 0.5, 0xffffffff);
-		RenderUtils.drawRoundedRectangle((float) x + 1,(float) y + 2, (float)x + 12, (float)y + 13, 4, set.getBoolean() ? color : 0xff000000);
-		if (isCheckHovered(mouseX, mouseY))
-			if(set.getBoolean()) {
-				Gui.drawRect(x + 1, y + 2, x + 12, y + 13, 0x55111111);
-			}else {
-				Gui.drawRect(x + 1, y + 2, x + 12, y + 13, 0x80232323);
-			}
+		FontUtil.drawString(settingName, x + 14, y + FontUtil.getFontHeight() / 2 - 0.5, 0xffffffff);
+		RenderUtils.drawRoundedRectangle((float) x + 1,(float) y + 2, (float)x + 12, (float)y + 13, 4, setting.getBoolean() ? color : 0xff000000);
+		if (isCheckHovered(mouseX, mouseY)) {
+			Gui.drawRect(x + 1, y + 2, x + 12, y + 13,setting.getBoolean() ? 0x55111111 : 0x80232323);
+		}
 	}
 
 	public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {
 		if (mouseButton == 0 && isCheckHovered(mouseX, mouseY)) {
-			set.setBoolean(!set.getBoolean());
+			setting.setBoolean(!setting.getBoolean());
 			return true;
 		}
 		

@@ -85,28 +85,42 @@ public class RotationUtils {
     }
 	
 	public static float getMovementYaw() {
-		float rotationYaw = mc.thePlayer.rotationYaw;
-		if(mc.thePlayer.moveForward < 0.0) {
-			rotationYaw -= 180;
-			if(mc.thePlayer.moveStrafing > 0.0) {
-				rotationYaw += 45;
-			}else if(mc.thePlayer.moveStrafing < 0.0) {
-				rotationYaw -= 45;
-			}
-		}else if(mc.thePlayer.moveForward > 0.0) {
-			if(mc.thePlayer.moveStrafing > 0.0) {
-				rotationYaw -= 45;
-			}else if(mc.thePlayer.moveStrafing < 0.0) {
-				rotationYaw += 45;
-			}
-		}
-		if(mc.thePlayer.moveForward == 0) {
-			if(mc.thePlayer.moveStrafing > 0.0) {
-				rotationYaw -= 90;
-			}else if(mc.thePlayer.moveStrafing < 0.0) {
-				rotationYaw += 90;
-			}
-		}
-		return rotationYaw - 180;
+		float yaw = 0.0f;
+	    double moveForward = mc.thePlayer.moveForward;
+	    double moveStrafe = mc.thePlayer.moveStrafing;
+	    if (moveForward == 0.0) {
+	        if (moveStrafe == 0.0) {
+	            yaw = 180.0f;
+	        }
+	        else if (moveStrafe > 0.0) {
+	            yaw = 90.0f;
+	        }
+	        else if (moveStrafe < 0.0) {
+	            yaw = -90.0f;
+	        }
+	    }
+	    else if (moveForward > 0.0) {
+	        if (moveStrafe == 0.0) {
+	            yaw = 180.0f;
+	        }
+	        else if (moveStrafe > 0.0) {
+	            yaw = 135.0f;
+	        }
+	        else if (moveStrafe < 0.0) {
+	            yaw = -135.0f;
+	        }
+	    }
+	    else if (moveForward < 0.0) {
+	        if (moveStrafe == 0.0) {
+	            yaw = 0.0f;
+	        }
+	        else if (moveStrafe > 0.0) {
+	            yaw = 45.0f;
+	        }
+	        else if (moveStrafe < 0.0) {
+	            yaw = -45.0f;
+	        }
+	    }
+	    return (MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw) + yaw % 360 + 360) % 360;
 	}
 }

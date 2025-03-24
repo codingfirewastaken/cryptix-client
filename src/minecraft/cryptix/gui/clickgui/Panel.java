@@ -62,7 +62,7 @@ public class Panel {
 		    for (ModuleButton et : Elements) {
 		        totalHeight += et.height + 3.8 + et.settHeight;
 		    }
-		    currentHeight = Utils.lerp((float) currentHeight, (float) totalHeight, 0.1F);
+		    currentHeight = Utils.lerp((float) currentHeight, (float) totalHeight, 0.02F);
 		    if (currentHeight < totalHeight) {
 		        if (currentHeight > totalHeight) {
 		            currentHeight = totalHeight;
@@ -85,11 +85,7 @@ public class Panel {
 			Gui.drawRect(x, y + 3, x + width, y + height, 0xFF181919);
 			RenderUtils.drawRoundedRectangle(x, y - 2, x + width, y + height, 12, 0xFF181919);
 		}else {
-			if(currentHeight > 0) {
-				currentHeight -= 2;
-			}else {
-				currentHeight = 0;
-			}
+			currentHeight = Utils.lerp((float) currentHeight, (float) 0, 0.02F);
 			RenderUtils.drawRoundedRectangle(x, y, x + width, (float) (startY + currentHeight + 1), 12, 0xFF232424);
 			RenderUtils.drawRoundedRectangle(x, y - 2, x + width, y + height + 2, 12, 0xFF181919);
 		}

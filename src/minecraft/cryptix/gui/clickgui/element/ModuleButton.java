@@ -48,11 +48,11 @@ public class ModuleButton {
 		menuelements = new ArrayList<>();
 		if (Client.instance.settingsManager.getSettingsByMod(imod) != null)
 			for (Setting s : Client.instance.settingsManager.getSettingsByMod(imod)) {
-				if (s.isCheck()) {
+				if (s.isCheckBox()) {
 					menuelements.add(new CheckBox(this, s));
 				} else if (s.isSlider()) {
 					menuelements.add(new Slider(this, s));
-				} else if (s.isCombo()) {
+				} else if (s.isModeBox()) {
 					menuelements.add(new ModeBox(this, s));
 				}
 			}
@@ -108,9 +108,9 @@ public class ModuleButton {
 			for (Setting s : Client.instance.settingsManager.getSettingsByMod(mod)) {
 				if (s.isSlider()) {
 					allSettHeight += 17;
-				} else if (s.isCheck()) {
+				} else if (s.isCheckBox()) {
 					allSettHeight += 15;
-				} else if (s.isCombo()) {
+				} else if (s.isModeBox()) {
 					allSettHeight += 15;
 				}
 			}

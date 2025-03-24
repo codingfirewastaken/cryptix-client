@@ -27,7 +27,7 @@ public class Setting {
         this.parent = parent;
         this.sval = sval;
         this.options = options;
-        this.mode = "Combo";
+        this.mode = "ModeBox";
         this.visible = true;
         parent.addSetting(this);
     }
@@ -36,7 +36,7 @@ public class Setting {
         this.name = name;
         this.parent = parent;
         this.bval = bval;
-        this.mode = "Check";
+        this.mode = "CheckBox";
         this.visible = true;
         parent.addSetting(this);
     }
@@ -121,12 +121,12 @@ public class Setting {
         return this.max;
     }
 
-    public boolean isCombo() {
-        return this.mode.equalsIgnoreCase("Combo");
+    public boolean isModeBox() {
+        return this.mode.equalsIgnoreCase("ModeBox");
     }
 
-    public boolean isCheck() {
-        return this.mode.equalsIgnoreCase("Check");
+    public boolean isCheckBox() {
+        return this.mode.equalsIgnoreCase("CheckBox");
     }
 
     public boolean isSlider() {

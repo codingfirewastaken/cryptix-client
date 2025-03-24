@@ -19,9 +19,9 @@ import net.minecraft.util.MathHelper;
 public class Slider extends Element {
 	public boolean dragging;
 
-	public Slider(ModuleButton iparent, Setting iset) {
-		parent = iparent;
-		set = iset;
+	public Slider(ModuleButton parent1, Setting setting1) {
+		parent = parent1;
+		setting = setting1;
 		dragging = false;
 		super.setup();
 	}
@@ -31,16 +31,16 @@ public class Slider extends Element {
 	    Color temp1 = ColorUtil.getClickGUIColor2();
 	    int color1 = new Color(temp.getRed(), temp.getGreen(), temp.getBlue(), (int) Client.instance.settingsManager.getSettingByName("Color1 Alpha").getValue()).getRGB();
 	    int color2 = new Color(temp1.getRed(), temp1.getGreen(), temp1.getBlue(), (int) Client.instance.settingsManager.getSettingByName("Color2 Alpha").getValue()).getRGB();
-		String displayval = "" + Math.round(set.getValue() * 100D)/ 100D;
+		String displayval = "" + Math.round(setting.getValue() * 100D)/ 100D;
 		boolean hoveredORdragged = isSliderHovered(mouseX, mouseY) || dragging;
-		double percentBar = (set.getValue() - set.getMin())/(set.getMax() - set.getMin());
+		double percentBar = (setting.getValue() - setting.getMin())/(setting.getMax() - setting.getMin());
 		
 		Gui.drawRect(x - 2, y, x + 88, y + height, 0xff232323);
 		
 		GlStateManager.pushMatrix();
 		GL11.glScaled(0.8, 0.8, 0.8);
-		FontUtil.drawString(setstrg, (x + 1) / 0.8, (y + 2) / 0.8, -1);
-		FontUtil.drawString(displayval, (x + FontUtil.getStringWidth(setstrg)) / 0.8 - 10, y / 0.8 + 2, -1);
+		FontUtil.drawString(settingName, (x + 1) / 0.8, (y + 2) / 0.8, -1);
+		FontUtil.drawString(displayval, (x + FontUtil.getStringWidth(settingName)) / 0.8 - 10, y / 0.8 + 2, -1);
 		GlStateManager.popMatrix();
 		int c = 0xFF606060;
 		RenderUtils.drawRoundedGradientRect((float)x, (float) y + 12, (float) (float) x + (float) 86,(float) ((float) y + 15), 3, c, c, c, c);
@@ -53,9 +53,9 @@ public class Slider extends Element {
 		
 
 		if (this.dragging) {
-			double diff = set.getMax() - set.getMin();
-			double val = set.getMin() + (MathHelper.clamp_double((mouseX - x) / 84, 0, 1)) * diff;
-			set.setValue(val); 
+			double diff = setting.getMax() - setting.getMin();
+			double val = setting.getMin() + (MathHelper.clamp_double((mouseX - x) / 84, 0, 1)) * diff;
+			setting.setValue(val); 
 		}
 
 	}

@@ -5,76 +5,76 @@ import cryptix.gui.clickgui.Setting;
 import cryptix.gui.clickgui.util.FontUtil;
 
 public class Element {
-	public ClickGUI clickgui;
-	public ModuleButton parent;
-	public Setting set;
-	public double offset;
-	public double x;
+    public ClickGUI clickgui;
+    public ModuleButton parent;
+    public Setting setting;
+    public double offset;
+    public double x;
 	public double y;
 	public double width;
-	public static double height;
-	
-	public String setstrg;
-	
-	public boolean startExtend = true;
-	
-	public void setup() {
-		clickgui = parent.parent.clickgui;
-	}
-	
-	public void update() {
-		x = parent.x;
-		y = parent.y + offset+ 15;
-		width = parent.width;
-		height = 15;
-		String sname = set.getName();
-		if(set.isCheck()){
-			setstrg = sname.substring(0, 1).toUpperCase() + sname.substring(1, sname.length());
-			double textx = x + width - FontUtil.getStringWidth(setstrg);
-			if (textx < x + 13) {
-				width += (x + 13) - textx + 1;
-			}
-		}else if(set.isCombo()){
-			setstrg = sname.substring(0, 1).toUpperCase() + sname.substring(1, sname.length());
-			int longest = FontUtil.getStringWidth(setstrg);
-			for (String s : set.getOptions()) {
-				int temp = FontUtil.getStringWidth(s);
-				if (temp > longest) {
-					longest = temp;
-				}
-			}
-			double textx = x + width - longest;
-			if (textx < x) {
-				width += x - textx + 1;
-			}
-		}else if(set.isSlider()){
-			height = 17;
-			setstrg = sname.substring(0, 1).toUpperCase() + sname.substring(1, sname.length());
-			String displayval = "" + Math.round(set.getValue() * 100D)/ 100D;
-			String displaymax = "" + Math.round(set.getMax() * 100D)/ 100D;
-			double textx = x + width - FontUtil.getStringWidth(setstrg) - FontUtil.getStringWidth(displaymax) - 4;
-			if (textx < x) {
-				width += x - textx + 1;
-			}
-		}
-	}
+    public static double height;
+    public String settingName;
+    public boolean startExtend = true;
 
-	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		
-	}
-	
-	public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {
-		
-		return isHovered(mouseX, mouseY);
-	}
+    public void setup() {
+        clickgui = parent.parent.clickgui;
+    }
 
-	public void mouseReleased(int mouseX, int mouseY, int state) {
-		
-	}
-	
-	public boolean isHovered(int mouseX, int mouseY) 
-	{
-		
-		return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
-	}
+    public void update() {
+        x = parent.x;
+        y = parent.y + offset + 15;
+        width = parent.width;
+        height = 15;
+
+        settingName = formatName(setting.getName());
+
+        if (setting.isCheckBox()) {
+            adjustWidth(FontUtil.getStringWidth(settingName), 13);
+        } else if (setting.isModeBox()) {
+            adjustWidth(getLongestStringWidth(setting.getOptions().toArray(new String[0])), 0);
+        } else if (setting.isSlider()) {
+            height = 17;
+            String displayMax = formatDouble(setting.getMax());
+            adjustWidth(FontUtil.getStringWidth(settingName) + FontUtil.getStringWidth(displayMax) + 4, 0);
+        }
+    }
+
+    private String formatName(String name) {
+        return name.substring(0, 1).toUpperCase() + name.substring(1);
+    }
+
+    private int getLongestStringWidth(String[] options) {
+        int longest = FontUtil.getStringWidth(settingName);
+        for (String option : options) {
+            longest = Math.max(longest, FontUtil.getStringWidth(option));
+        }
+        return longest;
+    }
+
+    private void adjustWidth(double textWidth, double padding) {
+        double textX = x + width - textWidth;
+        if (textX < x + padding) {
+            width += (x + padding) - textX + 1;
+        }
+    }
+
+    private String formatDouble(double value) {
+        return String.valueOf(Math.round(value * 100D) / 100D);
+    }
+
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        //rendering goes here
+    }
+
+    public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {
+        return isHovered(mouseX, mouseY);
+    }
+
+    public void mouseReleased(int mouseX, int mouseY, int state) {
+        //mouse release goes here
+    }
+
+    public boolean isHovered(int mouseX, int mouseY) {
+        return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
+    }
 }
