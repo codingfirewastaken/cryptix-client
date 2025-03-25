@@ -406,7 +406,7 @@ public class ItemRenderer
                 }
                 else
                 {
-                	if(ka.isToggled() && KillAura.target != null && !Client.instance.settingsManager.getSettingByName(ka, "Autoblock").getString().equalsIgnoreCase("None") && Utils.holdingSword()) {
+                	if(ka.isToggled() && Client.instance.moduleManager.killAura.target != null && !Client.instance.settingsManager.getSettingByName(ka, "Autoblock").getString().equalsIgnoreCase("None") && Utils.holdingSword()) {
                 		if(anim != null && anim.isToggled()) {
                     		if(mode.getString().equalsIgnoreCase("1.7")) {
                     			this.transformFirstPersonItem(f, f1);

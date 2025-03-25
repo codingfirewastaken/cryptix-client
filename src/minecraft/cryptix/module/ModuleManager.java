@@ -15,15 +15,17 @@ public class ModuleManager {
 	private static ArrayList<Module> modules = new ArrayList<Module>();
 	public Sprint sprint;
 	public BedNuker bedNuker;
+	public KillAura killAura;
 	
 	public ModuleManager() {
 		//Modules goes here
 		//Combat
 		modules.add(new AntiBot());
 		modules.add(new Velocity());
-		modules.add(new KillAura());
+		modules.add(killAura = new KillAura());
 		//Exploit
 		modules.add(new Disabler());
+		modules.add(new StaffDetector());
 		//Movement
 		modules.add(new NoSlow());
 		modules.add(new Speed());
@@ -32,6 +34,7 @@ public class ModuleManager {
 		//Player
 		modules.add(bedNuker = new BedNuker());
 		modules.add(new ChestStealer());
+		modules.add(new FastPlace());
 		modules.add(new InvManager());
 		modules.add(new KeepSprint());
 		modules.add(new NoFall());
@@ -39,11 +42,13 @@ public class ModuleManager {
 		//Visual
 		modules.add(new Animations());
 		modules.add(new BedESP());
+		modules.add(new Chams());
 		modules.add(new ClickGUI());
 		modules.add(new HUD());
 		modules.add(new ItemESP());
 		modules.add(new NameTags());
 		modules.add(new PlayerESP());
+		modules.add(new TargetHUD());
 	}
 	
 	public ArrayList<Module> getModules() {

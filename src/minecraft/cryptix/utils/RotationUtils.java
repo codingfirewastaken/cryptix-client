@@ -35,10 +35,8 @@ public class RotationUtils {
     }
 
     public static float smoothYaw(float targetYaw) {
-        float deltaYaw = rotDistance(currentYaw, targetYaw);
-
+        float deltaYaw = rotDistance(currentYaw == 0 ? mc.thePlayer.rotationYaw : currentYaw, targetYaw);
         currentYaw += deltaYaw;
-
         return currentYaw;
     }
 

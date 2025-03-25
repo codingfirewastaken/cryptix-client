@@ -22,13 +22,14 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 
 public class KillAura extends Module{
-	public static EntityLivingBase target;
+	public EntityLivingBase target;
 	private EntityLivingBase lastTarget = null;
     private long lastSwitchTime = 0;
     private Random random = new Random();
     private long lastAttackTime;
     private boolean blocking, b1, b2;
-    private Setting switchDelay, rotationRange, blockRange, attackRange, minCPS, maxCPS, autoblock;
+    private float[] lastRotation;
+    private Setting switchDelay, rotationRange, blockRange, attackRange, minCPS, maxCPS, autoblock,smoothing;
 	public KillAura() {
 		super("KillAura", 0, Category.COMBAT);
 		ArrayList<String> autoblocks = new ArrayList<String>(Arrays.asList("None", "Vanilla", "BlocksMC", "NCP"));
@@ -38,16 +39,19 @@ public class KillAura extends Module{
 		Client.instance.settingsManager.rSetting(attackRange = new Setting("Attack Range", this, 3, 3, 10, false));
 		Client.instance.settingsManager.rSetting(blockRange = new Setting("Block Range", this, 3, 3, 10, false));
 		Client.instance.settingsManager.rSetting(rotationRange = new Setting("Rotation Range", this, 3, 3, 10, false));
+		Client.instance.settingsManager.rSetting(smoothing = new Setting("Rotation Smoothing", this, 0, 0, 10, true));
 		Client.instance.settingsManager.rSetting(switchDelay = new Setting("Switch Delay", this, 150, 0, 1000, true));
 	}
 	
 	@Override
 	public void onDisable() {
+		lastRotation = null;
 		if(blocking || b1) {
 			sendPacket(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
 			blocking = false;
 			b1 = false;
 		}
+		target = null;
 	}
 	
 	@Override
@@ -74,13 +78,20 @@ public class KillAura extends Module{
             int cps = minCPSi + random.nextInt(maxCPSi - minCPSi + 8);
             int delay = 1000 / cps;
             if (isTargetInRange(target, rotationRange.getValue())) {
-            	float[] rotations = new float[] {RotationUtils.getRotations(target)[0], RotationUtils.getRotations(target)[1]};
+            	float targetYaw = RotationUtils.getRotations(target)[0];
+            	float targetPitch = RotationUtils.getRotations(target)[1];
             	float mouseSensitivity = mc.gameSettings.mouseSensitivity * 0.6f + 0.2f;
-                double multiplier = (double)(mouseSensitivity * mouseSensitivity * mouseSensitivity * 8.0f) * 0.15;
-                rotations[0] = (float)((double)Math.round((double)rotations[0] / multiplier) * multiplier);
-                rotations[1] = (float)((double)Math.round((double)rotations[1] / multiplier) * multiplier);
-            	mc.thePlayer.rotationYawHead = rotations[0];
-            	mc.thePlayer.rotationPitchHead = rotations[1];
+            	double multiplier = (double)(mouseSensitivity * mouseSensitivity * mouseSensitivity * 8.0f) * 0.12D;
+            	targetYaw = (float)((double)Math.round((double)targetYaw / multiplier) * multiplier);
+            	targetPitch = (float)((double)Math.round((double)targetPitch / multiplier) * multiplier);
+            	if(lastRotation == null) {
+            		lastRotation = new float[] {mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch};
+            	}
+            	float yawDifference = targetYaw - lastRotation[0];
+            	yawDifference = Math.max(-19, Math.min(19, yawDifference));
+            	mc.thePlayer.rotationYawHead = targetYaw + yawDifference;
+            	lastRotation = new float[] {targetYaw, targetPitch};
+            	mc.thePlayer.rotationPitchHead = targetPitch;
             }
             if (isTargetInRange(target, blockRange.getValue()) && Utils.holdingSword() && !Client.instance.moduleManager.bedNuker.rotating) {
             	if(autoblock.getString().equalsIgnoreCase("Vanilla")) {

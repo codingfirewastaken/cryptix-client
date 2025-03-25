@@ -1,6 +1,7 @@
 package cryptix.altmanager.gui;
 
 import java.io.IOException;
+import java.util.Random;
 
 import cryptix.altmanager.AltManagerGui;
 import cryptix.altmanager.SessionChanger;
@@ -13,6 +14,8 @@ public class CrackedLoginGui extends GuiScreen {
     private AltManagerGui parent;
     private GuiButton loginButton, backButton, randomButton;
     private GuiTextField usernameField;
+    private final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
+    private final int USERNAME_LENGTH = 10;
 
     public CrackedLoginGui(AltManagerGui parent) {
         this.parent = parent;
@@ -57,7 +60,18 @@ public class CrackedLoginGui extends GuiScreen {
         	}
         } else if (button.id == 1) {
             this.mc.displayGuiScreen(parent);
+        } else if (button.id == 2) {
+            usernameField.setText(generateRandomUsername());
         }
+    }
+    
+    private String generateRandomUsername() {
+        Random random = new Random();
+        StringBuilder username = new StringBuilder();
+        for (int i = 0; i < USERNAME_LENGTH; i++) {
+            username.append(CHARACTERS.charAt(random.nextInt(CHARACTERS.length())));
+        }
+        return username.toString();
     }
     
     @Override

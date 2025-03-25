@@ -27,7 +27,7 @@ public class Config {
                     e.printStackTrace();
                 }
             } else if(arg[0].toLowerCase().equalsIgnoreCase("load")) {
-            	if(arg[1].isEmpty()) {
+            	if(arg[1].isEmpty() || arg[1] == null) {
             		return;
             	}
             	File configs = new File(config, String.valueOf(arg[1]) + ".json");

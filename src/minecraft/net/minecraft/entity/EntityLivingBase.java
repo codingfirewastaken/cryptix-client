@@ -1394,7 +1394,7 @@ public abstract class EntityLivingBase extends Entity
 
                     if (this.onGround)
                     {
-                        f4 = this.worldObj.getBlockState(new BlockPos(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.getEntityBoundingBox().minY) - 1, MathHelper.floor_double(this.posZ))).getBlock().slipperiness * ((Client.instance.moduleManager.sprint.mode.getString().equalsIgnoreCase("Omni") || Client.instance.moduleManager.sprint.mode.getString().equalsIgnoreCase("Omni Legit")) && Client.instance.moduleManager.sprint.isToggled() && !Client.mc.gameSettings.keyBindForward.isKeyDown() ? 0.8338F : 0.91F);
+                        f4 = this.worldObj.getBlockState(new BlockPos(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.getEntityBoundingBox().minY) - 1, MathHelper.floor_double(this.posZ))).getBlock().slipperiness * ((Client.instance.moduleManager.sprint.mode.getString().equalsIgnoreCase("Omni") || Client.instance.moduleManager.sprint.mode.getString().equalsIgnoreCase("Omni Legit")) && Client.instance.moduleManager.sprint.isToggled() && !Client.mc.gameSettings.keyBindForward.isKeyDown() && !Client.mc.thePlayer.isSneaking() ? 0.8338F : 0.91F);
                     }
 
                     float f = 0.16277136F / (f4 * f4 * f4);

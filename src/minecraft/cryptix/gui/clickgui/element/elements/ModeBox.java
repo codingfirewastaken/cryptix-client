@@ -31,7 +31,7 @@ public class ModeBox extends Element {
 		FontUtil.drawString(settingName + ": " + mode, (x + 3 / 2) / 0.85, (y + 3) / 0.85, 0xffffffff);
 		GlStateManager.popMatrix();
 
-		Gui.drawRect(x - 2, y + 13, x + 88, y + 14, ColorUtil.getClickGUIColor().getRGB());
+		Gui.drawRect(x - 2, y + 13, x + 88, y + 14, 0xFF181919);
 	}
 
 	public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {

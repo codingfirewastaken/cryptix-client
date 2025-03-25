@@ -27,7 +27,7 @@ public class Sprint extends Module{
 			if(mode.getString().equalsIgnoreCase("Legit")) {
 				KeyBinding.setKeyBindState(mc.gameSettings.keyBindSprint.getKeyCode(), true);
 			}
-			if((mode.getString().equalsIgnoreCase("Omni") || mode.getString().equalsIgnoreCase("Omni Legit")) && MovementUtils.isMoving() && !mc.thePlayer.isCollidedHorizontally) {
+			if((mode.getString().equalsIgnoreCase("Omni") || mode.getString().equalsIgnoreCase("Omni Legit")) && MovementUtils.isMoving() && !mc.thePlayer.isCollidedHorizontally && !mc.thePlayer.isSneaking()) {
 				mc.thePlayer.setSprinting(true);
 				if(mode.getString().equalsIgnoreCase("Omni Legit") && !mc.gameSettings.keyBindForward.isKeyDown()) {
 					mc.thePlayer.rotationYawHead = mc.thePlayer.rotationYaw - 180;

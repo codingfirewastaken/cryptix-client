@@ -1,6 +1,9 @@
 package net.minecraft.client.renderer.entity;
 
 import com.google.common.collect.Lists;
+
+import cryptix.Client;
+
 import java.nio.FloatBuffer;
 import java.util.List;
 import net.minecraft.client.Minecraft;
@@ -106,7 +109,10 @@ public abstract class RendererLivingEntity<T extends EntityLivingBase> extends R
             {
                 entity.limbSwingAmount = 1.0F;
             }
-
+            if (Client.instance.moduleManager.getModuleByName("Chams").isToggled() && entity instanceof EntityPlayer) {
+                GL11.glEnable((int)32823);
+                GL11.glPolygonOffset((float)1.0f, (float)-2500000.0f);
+            }
             GlStateManager.pushMatrix();
             GlStateManager.disableCull();
             this.mainModel.swingProgress = this.getSwingProgress(entity, partialTicks);
@@ -280,6 +286,10 @@ public abstract class RendererLivingEntity<T extends EntityLivingBase> extends R
             if (Reflector.RenderLivingEvent_Post_Constructor.exists())
             {
                 Reflector.postForgeBusEvent(Reflector.RenderLivingEvent_Post_Constructor, new Object[] {entity, this, Double.valueOf(x), Double.valueOf(y), Double.valueOf(z)});
+            }
+            if (Client.instance.moduleManager.getModuleByName("Chams").isToggled() && entity instanceof EntityPlayer) {
+                GL11.glDisable((int)32823);
+                GL11.glPolygonOffset((float)1.0f, (float)2500000.0f);
             }
         }
     }

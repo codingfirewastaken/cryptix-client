@@ -39,8 +39,8 @@ public class Slider extends Element {
 		
 		GlStateManager.pushMatrix();
 		GL11.glScaled(0.8, 0.8, 0.8);
-		FontUtil.drawString(settingName, (x + 1) / 0.8, (y + 2) / 0.8, -1);
-		FontUtil.drawString(displayval, (x + FontUtil.getStringWidth(settingName)) / 0.8 - 10, y / 0.8 + 2, -1);
+		FontUtil.drawString(settingName + ":", (x + 1) / 0.8, (y + 2) / 0.8, -1);
+		FontUtil.drawString(displayval, (x + (FontUtil.getStringWidth(settingName) * 0.8) + 6) / 0.8, y / 0.8 + 2.5, -1);
 		GlStateManager.popMatrix();
 		int c = 0xFF606060;
 		RenderUtils.drawRoundedGradientRect((float)x, (float) y + 12, (float) (float) x + (float) 86,(float) ((float) y + 15), 3, c, c, c, c);
