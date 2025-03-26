@@ -1,1 +1,2 @@
-# Cryptix client
+# Discord:
+https://discord.gg/TRb2QyeBuM
