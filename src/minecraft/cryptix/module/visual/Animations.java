@@ -13,7 +13,7 @@ public class Animations extends Module{
 	public Animations() {
 		super("Animations", 0, Category.VISUAL);
 		ArrayList<String> modes = new ArrayList<>(Arrays.asList("None", "1.7", "Exhibition", "Spin"));
-		Client.instance.settingsManager.rSetting(mode = new Setting("Mode", this, "None",modes));
+		Client.instance.settingsManager.addSetting(mode = new Setting("Mode", this, "None",modes));
 	}
 
 }

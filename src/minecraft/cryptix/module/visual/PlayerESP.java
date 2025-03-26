@@ -16,12 +16,12 @@ public class PlayerESP extends Module{
 	private Setting colorred, colorgreen, colorblue, d3d, d2d, bar;
 	public PlayerESP() {
 		super("PlayerESP", 0, Category.VISUAL);
-		Client.instance.settingsManager.rSetting(colorred = new Setting("Red", this, 255, 0, 255, false));
-		Client.instance.settingsManager.rSetting(colorgreen = new Setting("Green", this, 255, 0, 255, false));
-		Client.instance.settingsManager.rSetting(colorblue = new Setting("Blue", this, 255, 0, 255, false));
-		Client.instance.settingsManager.rSetting(d3d = new Setting("3D", this, false));
-		Client.instance.settingsManager.rSetting(d2d = new Setting("2D", this, false));
-		Client.instance.settingsManager.rSetting(bar = new Setting("Health bar", this, false));
+		Client.instance.settingsManager.addSetting(colorred = new Setting("Red", this, 255, 0, 255, false));
+		Client.instance.settingsManager.addSetting(colorgreen = new Setting("Green", this, 255, 0, 255, false));
+		Client.instance.settingsManager.addSetting(colorblue = new Setting("Blue", this, 255, 0, 255, false));
+		Client.instance.settingsManager.addSetting(d3d = new Setting("3D", this, false));
+		Client.instance.settingsManager.addSetting(d2d = new Setting("2D", this, false));
+		Client.instance.settingsManager.addSetting(bar = new Setting("Health bar", this, false));
 	}
 	
 	@Override

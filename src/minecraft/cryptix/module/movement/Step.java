@@ -14,7 +14,7 @@ public class Step extends Module{
 	public Step() {
 		super("Step", 0, Category.MOVEMENT);
 		ArrayList<String> modes = new ArrayList<String>(Arrays.asList("Normal", "BlocksMC"));
-		Client.instance.settingsManager.rSetting(mode = new Setting("Step Mode", this, "Packet", modes));
+		Client.instance.settingsManager.addSetting(mode = new Setting("Step Mode", this, "Packet", modes));
 	}
 	
 	@Override

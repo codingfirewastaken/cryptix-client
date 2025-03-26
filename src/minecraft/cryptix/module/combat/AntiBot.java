@@ -15,7 +15,7 @@ public class AntiBot extends Module{
 	private static Setting tab;
 	public AntiBot() {
 		super("AntiBot", 0, Category.COMBAT);
-		Client.instance.settingsManager.rSetting(tab = new Setting("Tablist", this, false));
+		Client.instance.settingsManager.addSetting(tab = new Setting("Tablist", this, false));
 	}
 	
 	public static boolean isBot(Entity e) {

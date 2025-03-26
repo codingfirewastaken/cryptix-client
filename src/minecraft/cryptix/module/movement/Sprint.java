@@ -17,7 +17,7 @@ public class Sprint extends Module{
 	public Sprint() {
 		super("Sprint", 0, Category.MOVEMENT);
 		ArrayList<String> modes = new ArrayList<String>();
-		Client.instance.settingsManager.rSetting(mode = new Setting("Mode", this, "Legit", new ArrayList<String>(Arrays.asList("Legit", "Omni", "Omni Legit"))));
+		Client.instance.settingsManager.addSetting(mode = new Setting("Mode", this, "Legit", new ArrayList<String>(Arrays.asList("Legit", "Omni", "Omni Legit"))));
 	}
 	
 	@Override

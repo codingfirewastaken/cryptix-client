@@ -1,6 +1,7 @@
 package net.minecraft.client.entity;
 
 import cryptix.Client;
+import cryptix.module.Module;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MovingSoundMinecartRiding;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -670,13 +671,22 @@ public class EntityPlayerSP extends AbstractClientPlayer
         float f = 0.8F;
         boolean flag2 = this.movementInput.moveForward >= f;
         this.movementInput.updatePlayerMoveState();
-
-        if (this.isUsingItem() && !this.isRiding() && !Client.instance.moduleManager.getModuleByName("NoSlow").isToggled())
+        Module noslow = Client.instance.moduleManager.getModuleByName("NoSlow");
+        if (this.isUsingItem() && !this.isRiding() && (!noslow.isToggled() || Client.instance.settingsManager.getSettingByName(noslow, "Mode").getString().equalsIgnoreCase("BlocksMC")))
         {
-            this.movementInput.moveStrafe *= 0.2F;
-            this.movementInput.moveForward *= 0.2F;
-            this.sprintToggleTimer = 0;
+        	if(Client.instance.settingsManager.getSettingByName(noslow, "Mode").getString().equalsIgnoreCase("BlocksMC") && noslow.isToggled()) {
+        		if(mc.thePlayer.onGroundTicks % 2 == 0) {
+        			this.movementInput.moveStrafe *= 0.0F;
+            		this.movementInput.moveForward *= 0.0F;
+            		this.sprintToggleTimer = 0;
+        		}
+        	}else {
+        		this.movementInput.moveStrafe *= 0.2F;
+        		this.movementInput.moveForward *= 0.2F;
+        		this.sprintToggleTimer = 0;
+        	}
         }
+        this.sprintToggleTimer = 0;
 
         this.pushOutOfBlocks(this.posX - (double)this.width * 0.35D, this.getEntityBoundingBox().minY + 0.5D, this.posZ + (double)this.width * 0.35D);
         this.pushOutOfBlocks(this.posX - (double)this.width * 0.35D, this.getEntityBoundingBox().minY + 0.5D, this.posZ - (double)this.width * 0.35D);

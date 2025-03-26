@@ -20,14 +20,14 @@ public class HUD extends Module{
 	private Setting background, lowercase, color1red, color1green, color1blue, color2red, color2green, color2blue;
 	public HUD() {
 		super("HUD", 0, Category.VISUAL);
-		Client.instance.settingsManager.rSetting(background = new Setting("Background", this, false));
-		Client.instance.settingsManager.rSetting(lowercase = new Setting("Lowercase", this, false));
-		Client.instance.settingsManager.rSetting(color1red = new Setting("Color1 red", this, 255, 0, 255, false));
-		Client.instance.settingsManager.rSetting(color1green = new Setting("Color1 green", this, 255, 0, 255, false));
-		Client.instance.settingsManager.rSetting(color1blue = new Setting("Color1 blue", this, 255, 0, 255, false));
-		Client.instance.settingsManager.rSetting(color2red = new Setting("Color2 red", this, 255, 0, 255, false));
-		Client.instance.settingsManager.rSetting(color2green = new Setting("Color2 green", this, 255, 0, 255, false));
-		Client.instance.settingsManager.rSetting(color2blue = new Setting("Color2 blue", this, 255, 0, 255, false));
+		Client.instance.settingsManager.addSetting(background = new Setting("Background", this, false));
+		Client.instance.settingsManager.addSetting(lowercase = new Setting("Lowercase", this, false));
+		Client.instance.settingsManager.addSetting(color1red = new Setting("Color1 red", this, 255, 0, 255, false));
+		Client.instance.settingsManager.addSetting(color1green = new Setting("Color1 green", this, 255, 0, 255, false));
+		Client.instance.settingsManager.addSetting(color1blue = new Setting("Color1 blue", this, 255, 0, 255, false));
+		Client.instance.settingsManager.addSetting(color2red = new Setting("Color2 red", this, 255, 0, 255, false));
+		Client.instance.settingsManager.addSetting(color2green = new Setting("Color2 green", this, 255, 0, 255, false));
+		Client.instance.settingsManager.addSetting(color2blue = new Setting("Color2 blue", this, 255, 0, 255, false));
 		
 	}
 	

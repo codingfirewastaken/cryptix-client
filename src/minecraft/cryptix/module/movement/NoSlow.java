@@ -21,21 +21,18 @@ public class NoSlow extends Module{
 	public NoSlow() {
 		super("NoSlow", 0, Category.MOVEMENT);
 		ArrayList<String> modes = new ArrayList<String>(Arrays.asList("Vanilla", "NCP", "BlocksMC"));
-		Client.instance.settingsManager.rSetting(mode = new Setting("Mode", this, "Vanilla", modes));
+		Client.instance.settingsManager.addSetting(mode = new Setting("Mode", this, "Vanilla", modes));
 	}
 	
 	 @Override
 	 public void onPreMotion() {
 		 this.setDisplayName(this.getName() + this.getUppercaseSuffix(mode.getString()));
 		 if(mc.thePlayer.isUsingItem()) {
-			 if(MovementUtils.isMoving() && !mc.thePlayer.isCollidedHorizontally && !mc.thePlayer.isSneaking() && mc.gameSettings.keyBindForward.isKeyDown()) {
+			 if(MovementUtils.isMoving() && !mc.thePlayer.isCollidedHorizontally && !mc.thePlayer.isSneaking() && mc.gameSettings.keyBindForward.isKeyDown() && !mode.getString().equalsIgnoreCase("BlocksMC")) {
 				 mc.thePlayer.setSprinting(true);
 			 }
 			 if(mode.getString().equalsIgnoreCase("NCP")) {
 				 sendPacket(new C07PacketPlayerDigging(Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.UP));
-			 }
-			 if(mode.getString().equalsIgnoreCase("BlocksMC")) {
-				 
 			 }
 			 tick++;
 		 }else {

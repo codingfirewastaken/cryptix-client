@@ -23,12 +23,13 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C0APacketAnimation;
+import net.minecraft.potion.Potion;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Vec3;
 
 public class Scaffold extends Module{
-	private Setting rotations, sprint, silentSwing, tower, towerSpeed;
+	private Setting rotations, sprint, silentSwing, tower, towerSpeed, multiPlace;
 	private float strictYaw, strictPitch;
 	private int keepy_y, towerTick, lastSlot;
 	private boolean sprinting, tower25;
@@ -41,11 +42,12 @@ public class Scaffold extends Module{
 		sprintModes.addAll(Arrays.asList("None", "Vanilla", "Keepy A", "Keepy B"));
 		ArrayList<String> towerModes = new ArrayList<String>();
 		towerModes.addAll(Arrays.asList("None", "2 tick", "3 tick", "4 tick"));
-		Client.instance.settingsManager.rSetting(rotations = new Setting("Rotations", this, "Simple", rotModes));
-		Client.instance.settingsManager.rSetting(sprint = new Setting("Sprint", this, "None", sprintModes));
-		Client.instance.settingsManager.rSetting(tower = new Setting("Tower", this, "None", towerModes));
-		Client.instance.settingsManager.rSetting(towerSpeed = new Setting("Tower speed", this, 1, 0, 10, true));
-		Client.instance.settingsManager.rSetting(silentSwing = new Setting("Silent swing", this, false));
+		Client.instance.settingsManager.addSetting(rotations = new Setting("Rotations", this, "Simple", rotModes));
+		Client.instance.settingsManager.addSetting(sprint = new Setting("Sprint", this, "None", sprintModes));
+		Client.instance.settingsManager.addSetting(tower = new Setting("Tower", this, "None", towerModes));
+		Client.instance.settingsManager.addSetting(towerSpeed = new Setting("Tower speed", this, 1, 0, 10, true));
+		Client.instance.settingsManager.addSetting(multiPlace = new Setting("Multi Place", this, true));
+		Client.instance.settingsManager.addSetting(silentSwing = new Setting("Silent Swing", this, false));
 	}
 	
 	@Override
@@ -96,24 +98,19 @@ public class Scaffold extends Module{
 			}
 		}
 		if(tower.getString().equalsIgnoreCase("3 tick")) {
-			if(towerTick == 4) {
-				mc.thePlayer.motionY = 0.42f;
-				MovementUtils.strafe(towerSpeed.getValue() / 10);
-				towerTick = 0;
-			}
-			if(towerTick == 1) {
-				mc.thePlayer.motionY = 0.33f;
-			}
-			if(towerTick == 2) {
-				mc.thePlayer.motionY = 1 - mc.thePlayer.posY % 1f;
-			}
-			if(towerTick == 3) {
-				mc.thePlayer.motionY = 0;
-			}
-			if(mc.thePlayer.onGround) {
-				mc.thePlayer.motionY = 0.42f;
-				MovementUtils.strafe(towerSpeed.getValue() / 10);
-			}
+			double speed = (towerSpeed.getValue() / 10) * (mc.thePlayer.isPotionActive(Potion.moveSpeed) ? 1.3 : 1);
+			if (mc.thePlayer.posY % 1.0 <= 0.00153598) {
+				if(!shouldPlaceBlock()) {
+	                mc.thePlayer.setPosition(mc.thePlayer.posX, Math.floor(mc.thePlayer.posY), mc.thePlayer.posZ);
+	                mc.thePlayer.motionY = 0.42;
+	                MovementUtils.strafe(speed);
+				}else {
+					mc.thePlayer.motionY = 0.05;
+					MovementUtils.strafe(speed);
+				}
+            } else if (mc.thePlayer.posY % 1.0 < 0.1 && !mc.thePlayer.onGround) {
+                mc.thePlayer.setPosition(mc.thePlayer.posX, Math.floor(mc.thePlayer.posY), mc.thePlayer.posZ);
+            }
 			towerTick++;
 		}
 		if(tower.getString().equalsIgnoreCase("2 tick")) {
@@ -173,7 +170,7 @@ public class Scaffold extends Module{
 					sprinting = true;
 					if(mc.thePlayer.onGround) {
 						mc.thePlayer.jump();
-						MovementUtils.strafe(0.4);
+						MovementUtils.strafe(mc.thePlayer.isPotionActive(Potion.moveSpeed) ? 0.55 : 0.4);
 					}else if(mc.thePlayer.offGroundTicks == 4) {
 						mc.thePlayer.motionY = -0.09800000190734863;
 					}
@@ -299,7 +296,9 @@ public class Scaffold extends Module{
             return;
         }
         if (this.attemptPlaceAt(targetPos, facings, controller)) {
-            return;
+        	if(!multiPlace.getBoolean()) {
+        		return;
+        	}
         }
         EnumFacing[] enumFacingArray = facings;
         int n = facings.length;

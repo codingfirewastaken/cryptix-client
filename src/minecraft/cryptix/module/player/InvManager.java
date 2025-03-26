@@ -20,9 +20,9 @@ public class InvManager extends Module{
 	private int ticks;
 	public InvManager() {
 		super("InvManager", 0, Category.PLAYER);
-		Client.instance.settingsManager.rSetting(delay = new Setting("Delay ticks", this, 1, 0, 10, true)); 
-		Client.instance.settingsManager.rSetting(swordSlot = new Setting("Sword slot", this, 1, 1, 9, true)); 
-		Client.instance.settingsManager.rSetting(blockSlot = new Setting("Block slot", this, 2, 1, 9, true)); 
+		Client.instance.settingsManager.addSetting(delay = new Setting("Delay ticks", this, 1, 0, 10, true)); 
+		Client.instance.settingsManager.addSetting(swordSlot = new Setting("Sword slot", this, 1, 1, 9, true)); 
+		Client.instance.settingsManager.addSetting(blockSlot = new Setting("Block slot", this, 2, 1, 9, true)); 
 	}
 	
 	

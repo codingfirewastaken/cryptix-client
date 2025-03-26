@@ -29,18 +29,19 @@ public class KillAura extends Module{
     private long lastAttackTime;
     private boolean blocking, b1, b2;
     private float[] lastRotation;
-    private Setting switchDelay, rotationRange, blockRange, attackRange, minCPS, maxCPS, autoblock,smoothing;
+    private Setting switchDelay, rotationRange, blockRange, attackRange, minCPS, maxCPS, autoblock,smoothing, team;
 	public KillAura() {
 		super("KillAura", 0, Category.COMBAT);
 		ArrayList<String> autoblocks = new ArrayList<String>(Arrays.asList("None", "Vanilla", "BlocksMC", "NCP"));
-		Client.instance.settingsManager.rSetting(minCPS = new Setting("Min CPS", this, 10, 1, 20, true));
-		Client.instance.settingsManager.rSetting(maxCPS = new Setting("Max CPS", this, 10, 1, 20, true));
-		Client.instance.settingsManager.rSetting(autoblock = new Setting("Autoblock", this, "None", autoblocks));
-		Client.instance.settingsManager.rSetting(attackRange = new Setting("Attack Range", this, 3, 3, 10, false));
-		Client.instance.settingsManager.rSetting(blockRange = new Setting("Block Range", this, 3, 3, 10, false));
-		Client.instance.settingsManager.rSetting(rotationRange = new Setting("Rotation Range", this, 3, 3, 10, false));
-		Client.instance.settingsManager.rSetting(smoothing = new Setting("Rotation Smoothing", this, 0, 0, 10, true));
-		Client.instance.settingsManager.rSetting(switchDelay = new Setting("Switch Delay", this, 150, 0, 1000, true));
+		Client.instance.settingsManager.addSetting(minCPS = new Setting("Min CPS", this, 10, 1, 20, true));
+		Client.instance.settingsManager.addSetting(maxCPS = new Setting("Max CPS", this, 10, 1, 20, true));
+		Client.instance.settingsManager.addSetting(autoblock = new Setting("Autoblock", this, "None", autoblocks));
+		Client.instance.settingsManager.addSetting(attackRange = new Setting("Attack Range", this, 3, 3, 10, false));
+		Client.instance.settingsManager.addSetting(blockRange = new Setting("Block Range", this, 3, 3, 10, false));
+		Client.instance.settingsManager.addSetting(rotationRange = new Setting("Rotation Range", this, 3, 3, 10, false));
+		Client.instance.settingsManager.addSetting(smoothing = new Setting("Rotation Smoothing", this, 0, 0, 10, true));
+		Client.instance.settingsManager.addSetting(switchDelay = new Setting("Switch Delay", this, 150, 0, 1000, true));
+		Client.instance.settingsManager.addSetting(team = new Setting("Teams", this, true));
 	}
 	
 	@Override
@@ -58,6 +59,7 @@ public class KillAura extends Module{
 	public void onPreMotion() {
 		this.setDisplayName(this.getName() + getUppercaseSuffix(autoblock.getString()));
 		if(Client.instance.moduleManager.getModuleByName("Scaffold").isToggled()) {
+			target = null;
 			return;
 		}
 		double a = attackRange.getValue();
@@ -187,7 +189,7 @@ public class KillAura extends Module{
         for(Entity object : mc.theWorld.loadedEntityList) {
             if(object instanceof EntityLivingBase) {
                 EntityLivingBase entity = (EntityLivingBase) object;
-                if(entity != mc.thePlayer && !AntiBot.isBot(entity)) {
+                if(entity != mc.thePlayer && !AntiBot.isBot(entity) && (!Utils.teamMate(entity) || !team.getBoolean())) {
                 	if (entity instanceof EntityPlayer || entity instanceof EntityMob || entity instanceof EntityAnimal) {
                     	double currentDist = mc.thePlayer.getDistanceToEntity(entity);
                         if (currentDist <= range) {

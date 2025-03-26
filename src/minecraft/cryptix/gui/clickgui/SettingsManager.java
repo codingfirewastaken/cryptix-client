@@ -14,7 +14,7 @@ public class SettingsManager {
 		this.settings = new ArrayList<>();
 	}
 	
-	public void rSetting(Setting in){
+	public void addSetting(Setting in){
 		this.settings.add(in);
 	}
 	

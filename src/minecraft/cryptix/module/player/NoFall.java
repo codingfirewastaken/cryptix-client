@@ -20,7 +20,7 @@ public class NoFall extends Module{
 	public NoFall() {
 		super("NoFall", 0, Category.PLAYER);
 		ArrayList<String> modes = new ArrayList<String>(Arrays.asList("Packet", "BlocksMC"));
-		Client.instance.settingsManager.rSetting(mode = new Setting("Mode", this, "Packet", modes));
+		Client.instance.settingsManager.addSetting(mode = new Setting("Mode", this, "Packet", modes));
 	}
 	
 	@Override

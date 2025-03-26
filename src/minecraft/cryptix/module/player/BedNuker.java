@@ -28,10 +28,10 @@ public class BedNuker extends Module{
 	public boolean rotating;
 	public BedNuker() {
 		super("BedNuker", 0, Category.PLAYER);
-		Client.instance.settingsManager.rSetting(range = new Setting("Range", this, 3, 3, 8, false));
-		Client.instance.settingsManager.rSetting(delay = new Setting("Break Delay", this, 100, 0, 500, true));
-		Client.instance.settingsManager.rSetting(rotate = new Setting("Only Rotate at Start and Stop", this, false));
-		Client.instance.settingsManager.rSetting(render = new Setting("Render Progress", this, true));
+		Client.instance.settingsManager.addSetting(range = new Setting("Range", this, 3, 3, 8, false));
+		Client.instance.settingsManager.addSetting(delay = new Setting("Break Delay", this, 100, 0, 500, true));
+		Client.instance.settingsManager.addSetting(rotate = new Setting("Only Rotate at Start and Stop", this, false));
+		Client.instance.settingsManager.addSetting(render = new Setting("Render Progress", this, true));
 	}
 	
 	@Override

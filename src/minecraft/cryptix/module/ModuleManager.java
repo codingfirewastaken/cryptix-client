@@ -13,9 +13,10 @@ import net.minecraft.client.settings.KeyBinding;
 
 public class ModuleManager {
 	private static ArrayList<Module> modules = new ArrayList<Module>();
+	public KillAura killAura;
 	public Sprint sprint;
 	public BedNuker bedNuker;
-	public KillAura killAura;
+	public SafeWalk safeWalk;
 	
 	public ModuleManager() {
 		//Modules goes here
@@ -38,6 +39,7 @@ public class ModuleManager {
 		modules.add(new InvManager());
 		modules.add(new KeepSprint());
 		modules.add(new NoFall());
+		modules.add(safeWalk = new SafeWalk());
 		modules.add(new Scaffold());
 		//Visual
 		modules.add(new Animations());
@@ -68,7 +70,7 @@ public class ModuleManager {
     	for(Module mod : modules) {
     		if(mod.getKey() == key) mod.toggle();
     	}
-    	if(Client.instance.moduleManager.getModuleByName("Speed").isToggled()) {
+    	if(Client.instance.moduleManager.getModuleByName("Speed").isToggled() && !Client.instance.moduleManager.getModuleByName("Scaffold").isToggled()) {
     		KeyBinding.setKeyBindState(Client.mc.gameSettings.keyBindJump.getKeyCode(), false);
     	}
     }

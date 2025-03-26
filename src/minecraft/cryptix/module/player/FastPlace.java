@@ -10,7 +10,7 @@ public class FastPlace extends Module{
 	private Setting delay;
 	public FastPlace() {
 		super("FastPlace", 0, Category.PLAYER);
-		Client.instance.settingsManager.rSetting(delay = new Setting("Delay", this, 1, 0, 3, true));
+		Client.instance.settingsManager.addSetting(delay = new Setting("Delay", this, 1, 0, 3, true));
 	}
 	
 	@Override

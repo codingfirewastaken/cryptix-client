@@ -23,12 +23,12 @@ public class BedESP extends Module{
 	private Setting range, showObby, red, green, blue, bednuker;
 	public BedESP() {
 		super("BedESP", 0, Category.VISUAL);
-		Client.instance.settingsManager.rSetting(bednuker = new Setting("Only BedNuker", this, false));
-		Client.instance.settingsManager.rSetting(showObby = new Setting("Show Obsidian", this, false));
-		Client.instance.settingsManager.rSetting(range = new Setting("Range", this, 100.0, 10.0, 500.0, true));
-		Client.instance.settingsManager.rSetting(red = new Setting("Red", this, 255, 0.0, 255.0, true));
-		Client.instance.settingsManager.rSetting(green = new Setting("Green", this, 255, 0.0, 255.0, true));
-		Client.instance.settingsManager.rSetting(blue = new Setting("Blue", this, 255, 0.0, 255.0, true));
+		Client.instance.settingsManager.addSetting(bednuker = new Setting("Only BedNuker", this, false));
+		Client.instance.settingsManager.addSetting(showObby = new Setting("Show Obsidian", this, false));
+		Client.instance.settingsManager.addSetting(range = new Setting("Range", this, 100.0, 10.0, 500.0, true));
+		Client.instance.settingsManager.addSetting(red = new Setting("Red", this, 255, 0.0, 255.0, true));
+		Client.instance.settingsManager.addSetting(green = new Setting("Green", this, 255, 0.0, 255.0, true));
+		Client.instance.settingsManager.addSetting(blue = new Setting("Blue", this, 255, 0.0, 255.0, true));
 	}
 	
 	@Override

@@ -14,9 +14,9 @@ public class ChestStealer extends Module{
 	private Setting delaySetting, closeChest, custom;
 	public ChestStealer() {
 		super("ChestStealer", 0, Category.PLAYER);
-		Client.instance.settingsManager.rSetting(delaySetting = new Setting("Delay §aticks", this, 2, 0, 10, false));
-		Client.instance.settingsManager.rSetting(closeChest = new Setting("Auto close", this, true));
-		Client.instance.settingsManager.rSetting(custom = new Setting("Custom chest", this, false));
+		Client.instance.settingsManager.addSetting(delaySetting = new Setting("Delay §aticks", this, 2, 0, 10, false));
+		Client.instance.settingsManager.addSetting(closeChest = new Setting("Auto close", this, true));
+		Client.instance.settingsManager.addSetting(custom = new Setting("Custom chest", this, false));
 	}
 	
 	@Override

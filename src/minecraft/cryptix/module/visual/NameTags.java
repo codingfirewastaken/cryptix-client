@@ -17,12 +17,12 @@ public class NameTags extends Module{
 	private Setting background, opacity, scale, showArmor, showDistance, textShadow;
 	public NameTags() {
 		super("NameTags", 0, Category.VISUAL);
-		Client.instance.settingsManager.rSetting(opacity = new Setting("Opacity", this, 100, 0, 255, true));
-		Client.instance.settingsManager.rSetting(scale = new Setting("Scale", this, 1, 0.5, 5, false));
-		Client.instance.settingsManager.rSetting(background = new Setting("Background", this, true));
-		Client.instance.settingsManager.rSetting(showArmor = new Setting("Show Armor", this, false));
-		Client.instance.settingsManager.rSetting(showDistance = new Setting("Show Distance", this, false));
-		Client.instance.settingsManager.rSetting(textShadow = new Setting("Text Shadow", this, false));
+		Client.instance.settingsManager.addSetting(opacity = new Setting("Opacity", this, 100, 0, 255, true));
+		Client.instance.settingsManager.addSetting(scale = new Setting("Scale", this, 1, 0.5, 5, false));
+		Client.instance.settingsManager.addSetting(background = new Setting("Background", this, true));
+		Client.instance.settingsManager.addSetting(showArmor = new Setting("Show Armor", this, false));
+		Client.instance.settingsManager.addSetting(showDistance = new Setting("Show Distance", this, false));
+		Client.instance.settingsManager.addSetting(textShadow = new Setting("Text Shadow", this, false));
 	}
 	
 	@Override
