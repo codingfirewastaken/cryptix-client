@@ -10,19 +10,25 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemAppleGold;
 import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemExpBottle;
+import net.minecraft.item.ItemGlassBottle;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 
 public class InvManager extends Module{
-	private Setting swordSlot, blockSlot, delay;
+	private Setting swordSlot, blockSlot, delay, gappleSlot, dropTrash;
 	private int ticks;
 	public InvManager() {
 		super("InvManager", 0, Category.PLAYER);
-		Client.instance.settingsManager.addSetting(delay = new Setting("Delay ticks", this, 1, 0, 10, true)); 
-		Client.instance.settingsManager.addSetting(swordSlot = new Setting("Sword slot", this, 1, 1, 9, true)); 
-		Client.instance.settingsManager.addSetting(blockSlot = new Setting("Block slot", this, 2, 1, 9, true)); 
+		Client.instance.settingsManager.addSetting(delay = new Setting("Delay Ticks", this, 1, 0, 10, true)); 
+		Client.instance.settingsManager.addSetting(swordSlot = new Setting("Sword Slot", this, 1, 1, 9, true)); 
+		Client.instance.settingsManager.addSetting(blockSlot = new Setting("Block Slot", this, 2, 1, 9, true)); 
+		Client.instance.settingsManager.addSetting(gappleSlot = new Setting("Gapple Slot", this, 3, 1, 9, true)); 
+		Client.instance.settingsManager.addSetting(dropTrash = new Setting("Drop Trash", this, true)); 
 	}
 	
 	
@@ -34,15 +40,17 @@ public class InvManager extends Module{
 	        } else if (!this.isBestSword(mc.thePlayer.inventoryContainer.getSlot(36).getStack())) {
 	            this.getSword((int) swordSlot.getValue());
 	        }
-			this.getBestBlock((int) blockSlot.getValue() - 3);
 			this.getBestArmor();
+			dropTrash();
+			this.getBestGap();
+			this.getBestBlock((int) blockSlot.getValue());
 			ticks++;
 		}
     }
 
-	public void swap(int slot1, int hotbarSlot) {
+	public void swap(int slot1, int slot2) {
 		if(ticks >= delay.getValue()) {
-			mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, slot1, hotbarSlot, 2, mc.thePlayer);
+			mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, slot1, slot2, 2, mc.thePlayer);
 			ticks = 0;
 		}
     }
@@ -59,13 +67,41 @@ public class InvManager extends Module{
     }
 
     private boolean isBlock(ItemStack item) {
-    	if(item.getItem() instanceof ItemBlock) {
+    	if(item != null && item.getItem() instanceof ItemBlock) {
     		Block block = ((ItemBlock)item.getItem()).getBlock();
     		if(block.isFullBlock() && block != Blocks.sand && block != Blocks.gravel) {
     			return true;
     		}
     	}
         return false;
+    }
+    
+    private void dropTrash() {
+    	ItemStack is;
+    	int i = 9;
+        while (i < 45) {
+            if (mc.thePlayer.inventoryContainer.getSlot(i).getHasStack() && this.isTrash(is = mc.thePlayer.inventoryContainer.getSlot(i).getStack())) {
+                this.drop(i);
+            }
+            ++i;
+        }
+    }
+    
+    private boolean isTrash(ItemStack stack) {
+    	return stack.getUnlocalizedName().contains("spawn") || stack.getUnlocalizedName().contains("cobweb") || stack.getUnlocalizedName().contains("piston") || stack.getUnlocalizedName().contains("redstone") || stack.getUnlocalizedName().contains("egg") || stack.getUnlocalizedName().contains("flint") || stack.getUnlocalizedName().contains("snow") || stack.getUnlocalizedName().contains("axe") || stack.getUnlocalizedName().contains("pickaxe") || stack.getUnlocalizedName().contains("shovel") || stack.getUnlocalizedName().contains("fish") || stack.getUnlocalizedName().contains("string") || stack.getUnlocalizedName().contains("stick") || stack.getUnlocalizedName().contains("bucket") || stack.getItem() instanceof ItemExpBottle || stack.getItem() instanceof ItemAxe;
+    }
+    
+    private void getBestGap() {
+        int selectedSlot = (int)gappleSlot.getValue();
+        int i = 9;
+        while (i < 45) {
+            ItemStack is;
+            if (mc.thePlayer.inventoryContainer.getSlot(i).getHasStack() && (is = mc.thePlayer.inventoryContainer.getSlot(i).getStack()).getItem() instanceof ItemAppleGold && !mc.thePlayer.inventoryContainer.getSlot(selectedSlot - 1).getHasStack()) {
+                this.swap(i, selectedSlot - 1);
+                break;
+            }
+            ++i;
+        }
     }
     
     private int getArmorProtection(ItemArmor armor) {
@@ -105,18 +141,24 @@ public class InvManager extends Module{
     }
     
     private void getBestBlock(int slot) {
-        int selectedSlot = slot + 1;
-        if (selectedSlot < 0 || selectedSlot > 8) {
-            selectedSlot = 0;
-        }
+        int selectedSlot = slot - 1;
         int i = 9;
+        int bestSlot = -1;
+        int bestStackSize = 0;
+
         while (i < 45) {
-            ItemStack is;
-            if (mc.thePlayer.inventoryContainer.getSlot(i).getHasStack() && (is = mc.thePlayer.inventoryContainer.getSlot(i).getStack()).getItem() instanceof ItemBlock && !mc.thePlayer.inventoryContainer.getSlot(selectedSlot + 36).getHasStack()) {
-                this.swap(i, selectedSlot);
-                break;
+            ItemStack stack = mc.thePlayer.inventoryContainer.getSlot(i).getStack();
+            if (isBlock(stack)) {
+                int stackSize = stack.stackSize;
+                if (stackSize > bestStackSize) {
+                    bestStackSize = stackSize;
+                    bestSlot = i;
+                }
             }
             ++i;
+        }
+        if (bestSlot != -1) {
+            this.swap(bestSlot, selectedSlot);
         }
     }
     

@@ -37,10 +37,22 @@ import java.util.Queue;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.crypto.SecretKey;
 
+import net.minecraft.network.handshake.client.C00Handshake;
+import net.minecraft.network.login.client.C00PacketLoginStart;
+import net.minecraft.network.login.client.C01PacketEncryptionResponse;
+import net.minecraft.network.play.client.C01PacketChatMessage;
+import net.minecraft.network.play.client.C02PacketUseEntity;
+import net.minecraft.network.play.client.C03PacketPlayer;
+import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 import net.minecraft.network.play.client.C0FPacketConfirmTransaction;
+import net.minecraft.network.play.server.S02PacketChat;
+import net.minecraft.network.play.server.S07PacketRespawn;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
+import net.minecraft.network.status.client.C00PacketServerQuery;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.CryptManager;
@@ -60,6 +72,7 @@ import org.apache.logging.log4j.MarkerManager;
 
 public class NetworkManager extends SimpleChannelInboundHandler<Packet>
 {
+	private boolean disabling;
     private static final Logger logger = LogManager.getLogger();
     public static final Marker logMarkerNetwork = MarkerManager.getMarker("NETWORK");
     public static final Marker logMarkerPackets = MarkerManager.getMarker("NETWORK_PACKETS", logMarkerNetwork);
@@ -146,6 +159,13 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
 
     protected void channelRead0(ChannelHandlerContext p_channelRead0_1_, Packet p_channelRead0_2_) throws Exception
     {
+    	if(p_channelRead0_2_ instanceof S02PacketChat && Client.instance.moduleManager.sessionInfo.isToggled()) {
+    		S02PacketChat packet = (S02PacketChat) p_channelRead0_2_;
+    		String message = packet.getChatComponent().getFormattedText().toLowerCase().replaceAll("(?i)§[0-9A-FK-OR]", "");
+    		if(message.contains("killed by " + Client.mc.getSession().getUsername()) || message.contains("slain by " + Client.mc.getSession().getUsername())) {
+    			Client.instance.moduleManager.sessionInfo.kills++;
+    		}
+    	}
         if (this.channel.isOpen())
         {
             try
@@ -169,9 +189,41 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
     public void sendPacket(Packet packetIn)
     {
     	Module disabler = Client.instance.moduleManager.getModuleByName("Disabler");
+    	Module noslow = Client.instance.moduleManager.getModuleByName("NoSlow");
+    	Module antiVoid = Client.instance.moduleManager.antiVoid;
     	if(disabler.isToggled()) {
     		if(Client.instance.settingsManager.getSettingByName(disabler, "Cancel C0B").getBoolean() && packetIn instanceof C0BPacketEntityAction) {
     			return;
+    		}
+    		if(Client.instance.settingsManager.getSettingByName(disabler, "BlocksMC").getBoolean()) {
+    			if (packetIn instanceof S07PacketRespawn) {
+                    disabling = true;
+                } else if (packetIn instanceof C02PacketUseEntity) {
+                    disabling = false;
+                } else if (packetIn instanceof C03PacketPlayer && Client.mc.thePlayer.ticksExisted <= 10) {
+                    disabling = true;
+                } else if (packetIn instanceof C0FPacketConfirmTransaction && disabling && Client.mc.thePlayer.ticksExisted < 350) {
+                    ((C0FPacketConfirmTransaction) packetIn).setUid(
+                    		Client.mc.thePlayer.ticksExisted % 2 == 0 ? Short.MIN_VALUE : Short.MAX_VALUE);
+                }
+    		}
+    	}
+    	if(noslow.isToggled()) {
+    		if(packetIn instanceof C08PacketPlayerBlockPlacement) {
+    			C08PacketPlayerBlockPlacement packet = (C08PacketPlayerBlockPlacement) packetIn;
+    		}
+    	}
+    	if(antiVoid.isToggled()) {
+    		if(Client.instance.moduleManager.antiVoid.blink) {
+    			Client.instance.moduleManager.antiVoid.blinkedPackets.add(packetIn);
+    			return;
+    		}
+    			if(Client.instance.moduleManager.antiVoid.b1 && packetIn instanceof C03PacketPlayer.C04PacketPlayerPosition) {
+    				C04PacketPlayerPosition pos = (C04PacketPlayerPosition) packetIn;
+    				BlockPos safePos = Client.instance.moduleManager.antiVoid.lastSafePos;
+    				pos.setPositionX(safePos.getX());
+    				pos.setPositionY(safePos.getY());
+    				pos.setPositionZ(safePos.getZ());
     		}
     	}
         if (this.isChannelOpen())

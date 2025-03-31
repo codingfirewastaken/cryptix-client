@@ -62,8 +62,8 @@ public class ModuleButton {
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 	    Color temp = ColorUtil.getClickGUIColor();
 	    Color temp1 = ColorUtil.getClickGUIColor2();
-	    int color1 = new Color(temp.getRed(), temp.getGreen(), temp.getBlue(), (int) Client.instance.settingsManager.getSettingByName("Color1 Alpha").getValue()).getRGB();
-	    int color2 = new Color(temp1.getRed(), temp1.getGreen(), temp1.getBlue(), (int) Client.instance.settingsManager.getSettingByName("Color2 Alpha").getValue()).getRGB();
+	    int color1 = new Color(temp.getRed(), temp.getGreen(), temp.getBlue()).getRGB();
+	    int color2 = new Color(temp1.getRed(), temp1.getGreen(), temp1.getBlue()).getRGB();
 	    int textcolor = -1;
 	    if (mod.isToggled() && parent.currentHeight > this.height) {
 	        RenderUtils.drawGradientRect(this.x - 2.0, this.y - 1.0, this.x + this.width + 2.0, this.y + 2.0 + this.height + 1.0, color1, color2);
@@ -123,10 +123,8 @@ public class ModuleButton {
 	public boolean keyTyped(char typedChar, int keyCode) throws IOException {
 		if (listening) {
 			if (keyCode != Keyboard.KEY_ESCAPE) {
-				Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Bound '" + mod.getName() + "'" + " to '" + Keyboard.getKeyName(keyCode) + "'"));
 				mod.setKey(keyCode);
 			} else {
-				Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Unbound '" + mod.getName() + "'"));
 				mod.setKey(Keyboard.KEY_NONE);
 			}
 			listening = false;

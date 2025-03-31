@@ -85,6 +85,7 @@ public abstract class EntityLivingBase extends Entity
     public float prevRenderYawOffset;
     public float rotationYawHead;
     public float rotationPitchHead;
+    public float fixedRotationYaw;
     public float prevRotationYawHead;
     public float prevRotationPitchHead;
     public float jumpMovementFactor = 0.02F;

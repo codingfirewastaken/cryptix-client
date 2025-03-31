@@ -1015,6 +1015,7 @@ public abstract class Entity implements ICommandSender
 
         if (f >= 1.0E-4F)
         {
+        	boolean shouldMoveFix = Client.instance.moduleManager.killAura.target != null && Client.instance.settingsManager.getSettingByName(Client.instance.moduleManager.killAura, "Movefix").getBoolean();
             f = MathHelper.sqrt_float(f);
 
             if (f < 1.0F)
@@ -1025,8 +1026,8 @@ public abstract class Entity implements ICommandSender
             f = friction / f;
             strafe = strafe * f;
             forward = forward * f;
-            float f1 = MathHelper.sin(this.rotationYaw * (float)Math.PI / 180.0F);
-            float f2 = MathHelper.cos(this.rotationYaw * (float)Math.PI / 180.0F);
+            float f1 = MathHelper.sin((shouldMoveFix ? Client.mc.thePlayer.fixedRotationYaw : this.rotationYaw) * (float)Math.PI / 180.0F);
+            float f2 = MathHelper.cos((shouldMoveFix ? Client.mc.thePlayer.fixedRotationYaw : this.rotationYaw) * (float)Math.PI / 180.0F);
             this.motionX += (double)(strafe * f2 - forward * f1);
             this.motionZ += (double)(forward * f2 + strafe * f1);
         }

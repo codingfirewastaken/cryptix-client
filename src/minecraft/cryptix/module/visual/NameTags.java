@@ -46,8 +46,7 @@ public class NameTags extends Module{
 	    
 	    GL11.glTranslated(x, y - 0.1, z);
 	    
-	    // Apply yaw rotation (horizontal rotation only)
-	    GL11.glRotated(-mc.getRenderManager().playerViewY, 0.0, 1.0, 0.0);  // Yaw rotation, horizontal
+	    GL11.glRotated(-mc.getRenderManager().playerViewY, 0.0, 1.0, 0.0);
 	    
 	    GlStateManager.disableDepth();
 	    GL11.glScalef(0.03f + d, 0.03f + d, 0.03f + d);

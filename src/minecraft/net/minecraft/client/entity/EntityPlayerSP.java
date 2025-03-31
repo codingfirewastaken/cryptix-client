@@ -2,6 +2,7 @@ package net.minecraft.client.entity;
 
 import cryptix.Client;
 import cryptix.module.Module;
+import cryptix.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MovingSoundMinecartRiding;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -31,6 +32,7 @@ import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemSword;
 import net.minecraft.network.play.client.C01PacketChatMessage;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
@@ -138,7 +140,9 @@ public class EntityPlayerSP extends AbstractClientPlayer
     		this.offGroundTicks++;
     		this.onGroundTicks = 0;
     	}
+    	Client.instance.moduleManager.noFall.spoof = mc.thePlayer.onGround;
     	Client.onPreMotion();
+    	this.fixedRotationYaw = this.rotationYawHead;
         boolean flag = this.isSprinting();
 
         if (flag != this.serverSprintState)
@@ -185,24 +189,24 @@ public class EntityPlayerSP extends AbstractClientPlayer
             {
                 if (flag2 && flag3)
                 {
-                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(this.posX, this.getEntityBoundingBox().minY, this.posZ, this.rotationYawHead, this.rotationPitchHead, this.onGround));
+                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(this.posX, this.getEntityBoundingBox().minY, this.posZ, this.rotationYawHead, this.rotationPitchHead, Client.instance.moduleManager.noFall.spoof));
                 }
                 else if (flag2)
                 {
-                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(this.posX, this.getEntityBoundingBox().minY, this.posZ, this.onGround));
+                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(this.posX, this.getEntityBoundingBox().minY, this.posZ, Client.instance.moduleManager.noFall.spoof));
                 }
                 else if (flag3)
                 {
-                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C05PacketPlayerLook(this.rotationYawHead, this.rotationPitchHead, this.onGround));
+                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C05PacketPlayerLook(this.rotationYawHead, this.rotationPitchHead, Client.instance.moduleManager.noFall.spoof));
                 }
                 else
                 {
-                    this.sendQueue.addToSendQueue(new C03PacketPlayer(this.onGround));
+                    this.sendQueue.addToSendQueue(new C03PacketPlayer(Client.instance.moduleManager.noFall.spoof));
                 }
             }
             else
             {
-                this.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(this.motionX, -999.0D, this.motionZ, this.rotationYawHead, this.rotationPitchHead, this.onGround));
+                this.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(this.motionX, -999.0D, this.motionZ, this.rotationYawHead, this.rotationPitchHead, Client.instance.moduleManager.noFall.spoof));
                 flag2 = false;
             }
 
@@ -675,9 +679,9 @@ public class EntityPlayerSP extends AbstractClientPlayer
         if (this.isUsingItem() && !this.isRiding() && (!noslow.isToggled() || Client.instance.settingsManager.getSettingByName(noslow, "Mode").getString().equalsIgnoreCase("BlocksMC")))
         {
         	if(Client.instance.settingsManager.getSettingByName(noslow, "Mode").getString().equalsIgnoreCase("BlocksMC") && noslow.isToggled()) {
-        		if(mc.thePlayer.onGroundTicks % 2 == 0) {
-        			this.movementInput.moveStrafe *= 0.0F;
-            		this.movementInput.moveForward *= 0.0F;
+        		if(!Utils.holdingSword()) {
+        			this.movementInput.moveStrafe *= 0.2F;
+            		this.movementInput.moveForward *= 0.2F;
             		this.sprintToggleTimer = 0;
         		}
         	}else {

@@ -54,6 +54,21 @@ public class C03PacketPlayer implements Packet<INetHandlerPlayServer>
     {
         return this.z;
     }
+    
+    public void setPositionX(double x)
+    {
+        this.x = x;
+    }
+
+    public void setPositionY(double y)
+    {
+        this.y = y;
+    }
+
+    public void setPositionZ(double z)
+    {
+        this.z = z;
+    }
 
     public float getYaw()
     {

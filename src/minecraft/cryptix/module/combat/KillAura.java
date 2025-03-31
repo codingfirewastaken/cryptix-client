@@ -29,7 +29,7 @@ public class KillAura extends Module{
     private long lastAttackTime;
     private boolean blocking, b1, b2;
     private float[] lastRotation;
-    private Setting switchDelay, rotationRange, blockRange, attackRange, minCPS, maxCPS, autoblock,smoothing, team;
+    private Setting switchDelay, rotationRange, blockRange, attackRange, minCPS, maxCPS, autoblock,smoothing, team, movefix;
 	public KillAura() {
 		super("KillAura", 0, Category.COMBAT);
 		ArrayList<String> autoblocks = new ArrayList<String>(Arrays.asList("None", "Vanilla", "BlocksMC", "NCP"));
@@ -42,6 +42,7 @@ public class KillAura extends Module{
 		Client.instance.settingsManager.addSetting(smoothing = new Setting("Rotation Smoothing", this, 0, 0, 10, true));
 		Client.instance.settingsManager.addSetting(switchDelay = new Setting("Switch Delay", this, 150, 0, 1000, true));
 		Client.instance.settingsManager.addSetting(team = new Setting("Teams", this, true));
+		Client.instance.settingsManager.addSetting(movefix = new Setting("Movefix", this, false));
 	}
 	
 	@Override

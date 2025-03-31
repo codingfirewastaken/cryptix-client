@@ -2,6 +2,7 @@ package cryptix.module.player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 import cryptix.Client;
 import cryptix.gui.clickgui.Setting;
@@ -31,7 +32,7 @@ import net.minecraft.util.Vec3;
 public class Scaffold extends Module{
 	private Setting rotations, sprint, silentSwing, tower, towerSpeed, multiPlace;
 	private float strictYaw, strictPitch;
-	private int keepy_y, towerTick, lastSlot;
+	private int keepy_y, towerTick, lastSlot, placed;
 	private boolean sprinting, tower25;
 	public static boolean jump;
 	public Scaffold() {
@@ -39,7 +40,7 @@ public class Scaffold extends Module{
 		ArrayList<String> rotModes = new ArrayList<String>();
 		rotModes.addAll(Arrays.asList("None", "Simple", "Strict", "Side"));
 		ArrayList<String> sprintModes = new ArrayList<String>();
-		sprintModes.addAll(Arrays.asList("None", "Vanilla", "Keepy A", "Keepy B"));
+		sprintModes.addAll(Arrays.asList("None", "Vanilla", "Keepy A", "Keepy B", "BlocksMC"));
 		ArrayList<String> towerModes = new ArrayList<String>();
 		towerModes.addAll(Arrays.asList("None", "2 tick", "3 tick", "4 tick"));
 		Client.instance.settingsManager.addSetting(rotations = new Setting("Rotations", this, "Simple", rotModes));
@@ -66,18 +67,21 @@ public class Scaffold extends Module{
 	@Override
 	public void onPreMotion() {
 		sprint();
-		if(getRotations()[0] != 0 && getRotations()[1] != 0) {
-			mc.thePlayer.rotationYawHead = getRotations()[0];
-			mc.thePlayer.renderYawOffset = getRotations()[2] == 0 ? mc.thePlayer.rotationYawHead + 45 : getRotations()[2];
-			mc.thePlayer.rotationPitchHead = getRotations()[1];
-		}
-		if (this.shouldPlaceBlock()) {
-            this.place();
-        }
-		if(mc.gameSettings.keyBindJump.isKeyDown()) {
-			tower();
-		}else {
-			towerTick = 1;
+		if(getHotbarBlockCount() != 0) {
+			if(getRotations()[0] != 0 && getRotations()[1] != 0) {
+				mc.thePlayer.rotationYawHead = getRotations()[0];
+				mc.thePlayer.renderYawOffset = getRotations()[2] == 0 ? mc.thePlayer.rotationYawHead + 45 : getRotations()[2];
+				mc.thePlayer.rotationPitchHead = getRotations()[1];
+			}
+			if (this.shouldPlaceBlock()) {
+	            this.place();
+	        }
+			if(mc.gameSettings.keyBindJump.isKeyDown()) {
+				tower();
+			}else {
+				tower25 = true;
+				towerTick = 1;
+			}
 		}
 	}
 	
@@ -100,10 +104,12 @@ public class Scaffold extends Module{
 		if(tower.getString().equalsIgnoreCase("3 tick")) {
 			double speed = (towerSpeed.getValue() / 10) * (mc.thePlayer.isPotionActive(Potion.moveSpeed) ? 1.3 : 1);
 			if (mc.thePlayer.posY % 1.0 <= 0.00153598) {
-				if(!shouldPlaceBlock()) {
+				if(tower25 ? towerTick >= 3 : towerTick > 3) {
 	                mc.thePlayer.setPosition(mc.thePlayer.posX, Math.floor(mc.thePlayer.posY), mc.thePlayer.posZ);
-	                mc.thePlayer.motionY = 0.42;
+	                mc.thePlayer.motionY = 0.42F;
 	                MovementUtils.strafe(speed);
+	                towerTick = 0;
+	                tower25 = !tower25;
 				}else {
 					mc.thePlayer.motionY = 0.05;
 					MovementUtils.strafe(speed);
@@ -111,22 +117,23 @@ public class Scaffold extends Module{
             } else if (mc.thePlayer.posY % 1.0 < 0.1 && !mc.thePlayer.onGround) {
                 mc.thePlayer.setPosition(mc.thePlayer.posX, Math.floor(mc.thePlayer.posY), mc.thePlayer.posZ);
             }
+			if(mc.thePlayer.onGround) {
+				MovementUtils.strafe(speed);
+			}
 			towerTick++;
 		}
 		if(tower.getString().equalsIgnoreCase("2 tick")) {
-			towerTick++;
-			if(Math.round(mc.thePlayer.posY % 1.0f) == 0) {
-				mc.thePlayer.motionY = 0.42f;
-				MovementUtils.strafe(towerSpeed.getValue() / 10);
+			double speed = (towerSpeed.getValue() / 10) * (mc.thePlayer.isPotionActive(Potion.moveSpeed) ? 1.3 : 1);
+			if (mc.thePlayer.posY % 1.0 <= 0.00153598) {
+	        	mc.thePlayer.setPosition(mc.thePlayer.posX, Math.floor(mc.thePlayer.posY), mc.thePlayer.posZ);
+	            mc.thePlayer.motionY = 0.42F;
+	            MovementUtils.strafe(speed);
+            } else if (mc.thePlayer.posY % 1.0 < 0.1 && !mc.thePlayer.onGround) {
+                mc.thePlayer.setPosition(mc.thePlayer.posX, Math.floor(mc.thePlayer.posY), mc.thePlayer.posZ);
+            }
+			if(mc.thePlayer.onGround) {
+				MovementUtils.strafe(speed);
 			}
-			if(Math.round(mc.thePlayer.posY % 1.0f) == 0.42) {
-				mc.thePlayer.motionY = 0.33f;
-			}
-			if(Math.round(mc.thePlayer.posY % 1.0f) == 0.75) {
-				mc.thePlayer.motionY = 1 - mc.thePlayer.posY % 1f;
-				towerTick = 0;
-			}
-			
 		}
 		if(sprinting) {
 			mc.thePlayer.motionX *= 0.8;
@@ -287,7 +294,6 @@ public class Scaffold extends Module{
         BlockPos targetPos = this.getTargetBlockPos();
         EnumFacing[] facings = EnumFacing.values();
         PlayerControllerMP controller = mc.playerController;
-        BlockPos blockBelowPlayer = new BlockPos(mc.thePlayer.posX, mc.thePlayer.getEntityBoundingBox().minY - 1.0, mc.thePlayer.posZ);
         if (!shouldPlaceBlock() && !(mc.thePlayer.motionY < 0.0)) {
             return;
         }
@@ -296,9 +302,8 @@ public class Scaffold extends Module{
             return;
         }
         if (this.attemptPlaceAt(targetPos, facings, controller)) {
-        	if(!multiPlace.getBoolean()) {
-        		return;
-        	}
+        	handleMultiPlace();
+        	return;
         }
         EnumFacing[] enumFacingArray = facings;
         int n = facings.length;
@@ -306,21 +311,41 @@ public class Scaffold extends Module{
         while (n2 < n) {
             EnumFacing facing = enumFacingArray[n2];
             BlockPos offsetPos = targetPos.offset(facing.getOpposite());
-            if (this.attemptPlaceAt(offsetPos, facings, controller)) {
+            if (this.attemptPlaceAt(offsetPos, facings, controller) && !mc.theWorld.getBlockState(offsetPos).getBlock().isReplaceable(mc.theWorld, offsetPos)) {
+            	handleMultiPlace();
                 return;
             }
             BlockPos offsetBelow = offsetPos.down();
-            if (this.attemptPlaceAt(offsetBelow, facings, controller)) {
+            if (this.attemptPlaceAt(offsetBelow, facings, controller) && !mc.theWorld.getBlockState(offsetPos).getBlock().isReplaceable(mc.theWorld, offsetPos)) {
+            	handleMultiPlace();
                 return;
             }
             ++n2;
         }
     }
+	
+	private void handleMultiPlace() {
+	    if (multiPlace.getBoolean()) {
+	        int maxPlacements = 3;
+
+	        if (placed < maxPlacements) {
+	            placed++;
+	            place();
+	        } else {
+	            placed = 0;
+	        }
+	    } else {
+	        placed = 0;
+	    }
+	}
 
     private boolean attemptPlaceAt(BlockPos pos, EnumFacing[] facings, PlayerControllerMP controller) {
         EnumFacing[] enumFacingArray = facings;
         int n = facings.length;
         int n2 = 0;
+        if(pos == null || facings == null || controller == null) {
+        	return false;
+        }
         while (n2 < n) {
             EnumFacing facing = enumFacingArray[n2];
             if(jump) {
@@ -332,15 +357,13 @@ public class Scaffold extends Module{
                 Vec3 hitVec = new Vec3((double)offsetPos.getX() + 0.5 + (double)facing.getFrontOffsetX() * 0.5, (double)offsetPos.getY() + 0.5 + (double)facing.getFrontOffsetY() * 0.5, (double)offsetPos.getZ() + 0.5 + (double)facing.getFrontOffsetZ() * 0.5);
                 strictYaw = RotationUtils.rotateToVec3(hitVec)[0];
                 strictPitch = RotationUtils.rotateToVec3(hitVec)[1];
-                if (mc.thePlayer.getDistanceSq(hitVec.xCoord, hitVec.yCoord, hitVec.zCoord) <= 36.0) {
-                    controller.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem(), offsetPos, facing, hitVec);
-                    if (!silentSwing.getBoolean()) {
-                        mc.thePlayer.swingItem();
-                    } else {
-                        mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
-                    }
-                    return true;
+                controller.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem(), offsetPos, facing, hitVec);
+                if (!silentSwing.getBoolean()) {
+                    mc.thePlayer.swingItem();
+                } else {
+                    mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
                 }
+                return true;
             }
             ++n2;
         }

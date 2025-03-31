@@ -2,9 +2,12 @@ package cryptix.module;
 
 import java.util.ArrayList;
 
+import cryptix.Client;
 import cryptix.gui.clickgui.Setting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.network.Packet;
+import net.minecraft.util.ResourceLocation;
 
 public class Module {
 	public final Minecraft mc = Minecraft.getMinecraft();
@@ -13,6 +16,7 @@ public class Module {
 	private int key;
 	private final Category category;
 	private boolean toggled;
+	private long toggleTimeStamp;
 	
 	public Module(String name, int key, Category category) {
 		this.name = name;
@@ -57,7 +61,15 @@ public class Module {
 		return category;
 	}
 	
+	public long getToggleTimestamp() {
+		return toggleTimeStamp;
+	}
+	
 	public void toggle() {
+		toggleTimeStamp = System.currentTimeMillis();
+		if (mc.theWorld != null && this.name != "ClickGUI" && Client.instance.moduleManager.clickGUI.sound.getBoolean()) {
+            mc.getSoundHandler().playSound(PositionedSoundRecord.create(new ResourceLocation("gui.button.press"), 1.0f));
+        }
 		toggled = !toggled;
 		if(!toggled) {
 			onDisable();

@@ -29,8 +29,8 @@ public class Slider extends Element {
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		Color temp = ColorUtil.getClickGUIColor();
 	    Color temp1 = ColorUtil.getClickGUIColor2();
-	    int color1 = new Color(temp.getRed(), temp.getGreen(), temp.getBlue(), (int) Client.instance.settingsManager.getSettingByName("Color1 Alpha").getValue()).getRGB();
-	    int color2 = new Color(temp1.getRed(), temp1.getGreen(), temp1.getBlue(), (int) Client.instance.settingsManager.getSettingByName("Color2 Alpha").getValue()).getRGB();
+	    int color1 = new Color(temp.getRed(), temp.getGreen(), temp.getBlue()).getRGB();
+	    int color2 = new Color(temp1.getRed(), temp1.getGreen(), temp1.getBlue()).getRGB();
 		String displayval = "" + Math.round(setting.getValue() * 100D)/ 100D;
 		boolean hoveredORdragged = isSliderHovered(mouseX, mouseY) || dragging;
 		double percentBar = (setting.getValue() - setting.getMin())/(setting.getMax() - setting.getMin());

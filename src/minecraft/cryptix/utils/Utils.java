@@ -17,9 +17,16 @@ import net.minecraft.item.ItemSword;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
 
 public class Utils {
 	private static final Minecraft mc = Minecraft.getMinecraft();
+	
+	public static void setMotion(double motion) {
+		mc.thePlayer.motionX *= motion;
+		mc.thePlayer.motionZ *= motion;
+	}
 	
 	public static boolean overVoid() {
 		double playerPosY = mc.thePlayer.posY;
@@ -31,6 +38,14 @@ public class Utils {
 	        }
 	    }
 	    return true;
+    }
+	
+	public static boolean isLookingAtBlock() {
+        Vec3 start = new Vec3(mc.thePlayer.posX, mc.thePlayer.posY + (double)mc.thePlayer.getEyeHeight(), mc.thePlayer.posZ);
+        Vec3 look = mc.thePlayer.getLook(1.0f);
+        Vec3 end = start.addVector(look.xCoord * 5.0, look.yCoord * 5.0, look.zCoord * 5.0);
+        MovingObjectPosition rayTraceResult = mc.theWorld.rayTraceBlocks(start, end, false, true, false);
+        return rayTraceResult != null && rayTraceResult.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK;
     }
 	
 	public static boolean holdingSword() {

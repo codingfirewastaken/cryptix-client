@@ -15,41 +15,50 @@ public class ModuleManager {
 	private static ArrayList<Module> modules = new ArrayList<Module>();
 	public KillAura killAura;
 	public Sprint sprint;
+	public AntiVoid antiVoid;
 	public BedNuker bedNuker;
+	public NoFall noFall;
 	public SafeWalk safeWalk;
+	public ClickGUI clickGUI;
+	public SessionInfo sessionInfo;
 	
 	public ModuleManager() {
 		//Modules goes here
 		//Combat
 		modules.add(new AntiBot());
+		modules.add(new AutoClicker());
 		modules.add(new Velocity());
 		modules.add(killAura = new KillAura());
 		//Exploit
 		modules.add(new Disabler());
 		modules.add(new StaffDetector());
 		//Movement
+		modules.add(new InvMove());
+		modules.add(new KeepSprint());
+		modules.add(new LongJump());
 		modules.add(new NoSlow());
 		modules.add(new Speed());
 		modules.add(sprint = new Sprint());
 		modules.add(new Step());
 		//Player
+		modules.add(antiVoid = new AntiVoid());
 		modules.add(bedNuker = new BedNuker());
 		modules.add(new ChestStealer());
 		modules.add(new FastPlace());
 		modules.add(new InvManager());
-		modules.add(new KeepSprint());
-		modules.add(new NoFall());
+		modules.add(noFall = new NoFall());
 		modules.add(safeWalk = new SafeWalk());
 		modules.add(new Scaffold());
 		//Visual
 		modules.add(new Animations());
 		modules.add(new BedESP());
 		modules.add(new Chams());
-		modules.add(new ClickGUI());
+		modules.add(clickGUI = new ClickGUI());
 		modules.add(new HUD());
 		modules.add(new ItemESP());
 		modules.add(new NameTags());
 		modules.add(new PlayerESP());
+		modules.add(sessionInfo = new SessionInfo());
 		modules.add(new TargetHUD());
 	}
 	

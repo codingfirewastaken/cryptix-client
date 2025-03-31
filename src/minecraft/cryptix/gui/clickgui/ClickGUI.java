@@ -24,12 +24,14 @@ import cryptix.gui.clickgui.util.ColorUtil;
 import cryptix.gui.clickgui.util.FontUtil;
 import cryptix.module.Category;
 import cryptix.module.Module;
+import cryptix.utils.Utils;
 
 public class ClickGUI extends GuiScreen {
     private static ArrayList<Panel> panels;
     private static ArrayList<Panel> reversedPanels;
     private ModuleButton moduleButton;
     public SettingsManager settingsManager;
+    public int alpha;
 
     public ClickGUI() {
         settingsManager = Client.instance.settingsManager;
@@ -71,8 +73,10 @@ public class ClickGUI extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+    	alpha = (int) Utils.lerp(alpha, 100, 0.05F);
         ScaledResolution resolution = new ScaledResolution(mc);
-        this.drawRect(0, 0, resolution.getScaledWidth(), resolution.getScaledHeight(), 0x50000000);
+        int backColor = new Color(0,0,0,alpha).getRGB();
+        this.drawRect(0, 0, resolution.getScaledWidth(), resolution.getScaledHeight(), backColor);
 
         panels.forEach(panel -> panel.drawScreen(mouseX, mouseY, partialTicks));
 

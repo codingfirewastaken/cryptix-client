@@ -17,41 +17,51 @@ import net.minecraft.client.gui.ScaledResolution;
 
 public class HUD extends Module{
 	private FontRenderer fr = mc.fontRendererObj;
-	private Setting background, lowercase, color1red, color1green, color1blue, color2red, color2green, color2blue;
+	private Setting background, lowercase, color1red, color1green, color1blue, color2red, color2green, color2blue, watermark, animation;
 	public HUD() {
 		super("HUD", 0, Category.VISUAL);
-		Client.instance.settingsManager.addSetting(background = new Setting("Background", this, false));
-		Client.instance.settingsManager.addSetting(lowercase = new Setting("Lowercase", this, false));
 		Client.instance.settingsManager.addSetting(color1red = new Setting("Color1 red", this, 255, 0, 255, false));
 		Client.instance.settingsManager.addSetting(color1green = new Setting("Color1 green", this, 255, 0, 255, false));
 		Client.instance.settingsManager.addSetting(color1blue = new Setting("Color1 blue", this, 255, 0, 255, false));
 		Client.instance.settingsManager.addSetting(color2red = new Setting("Color2 red", this, 255, 0, 255, false));
 		Client.instance.settingsManager.addSetting(color2green = new Setting("Color2 green", this, 255, 0, 255, false));
 		Client.instance.settingsManager.addSetting(color2blue = new Setting("Color2 blue", this, 255, 0, 255, false));
+		Client.instance.settingsManager.addSetting(animation = new Setting("Animation", this, true));
+		Client.instance.settingsManager.addSetting(background = new Setting("Background", this, false));
+		Client.instance.settingsManager.addSetting(lowercase = new Setting("Lowercase", this, false));
+		Client.instance.settingsManager.addSetting(watermark = new Setting("Watermark", this, false));
 		
 	}
 	
 	@Override
 	public void onRender2D() {
 		int yOffset = 0;
+		int isssssskoldt = getColor((long)yOffset + (long)yOffset * 200000000L, 1.0f).getRGB();
+		if(watermark.getBoolean()) {
+			fr.drawStringWithShadow("C", 5, 5, isssssskoldt); 
+		    fr.drawStringWithShadow("ryptix", 5 + fr.getStringWidth("C"), 5, -1);
+		}
 		ArrayList<Module> mods = new ArrayList<>(Client.instance.moduleManager.getModules());
 		Collections.sort(mods, new Compare().reversed());
 		for(Module m : mods) {
 			if(!m.isToggled())
 				continue;
 			ScaledResolution sr = new ScaledResolution(mc);
+			long startTime = System.currentTimeMillis() - m.getToggleTimestamp();
 			float xOffset = sr.getScaledWidth() - fr.getStringWidth(m.getDisplayName());
-			float issssssKoldt = getColor((long)yOffset + (long)yOffset * 200000000L, 1.0f).getRGB();
+			isssssskoldt = getColor((long)yOffset + (long)yOffset * 200000000L, 1.0f).getRGB();
 			int n1 = fr.getStringWidth(m.getDisplayName()) + 1;
 			int n2 = n1 + 8;
 			int n3 = 11;
 			int n4 = (int)yOffset * 11;
 			int n5 = sr.getScaledWidth() - n2;
+			float alpha = (float) Math.min(n1, startTime / 2.0);
+			System.out.println(alpha);
 			if(background.getBoolean()) {
-				Gui.drawRect(n5 + 4, n4, n5 + n2, n4 + n3, 0x80000000);
+				Gui.drawRect(animation.getBoolean() ? n5 + 4 - alpha + n1 : n5 + 4, n4, n5 + n2, n4 + n3, 0x80000000);
 			}
 			String moduleName = String.valueOf(String.valueOf(m.getDisplayName())) + "§7";
-			fr.drawStringWithShadow(lowercase.getBoolean() ? m.getDisplayName().toLowerCase() : moduleName, xOffset - 2, yOffset * 11 + 2, (int) issssssKoldt);
+			fr.drawStringWithShadow(lowercase.getBoolean() ? m.getDisplayName().toLowerCase() : moduleName, animation.getBoolean() ? n5 + 7 - alpha + n1 : xOffset - 2, yOffset * 11 + 2, isssssskoldt);
 			yOffset++;
 		}
 	}
