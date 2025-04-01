@@ -42,6 +42,11 @@ public class Client {
 			if(mod.isToggled()) mod.onPostMotion();
 		}
 	}
+	public static void onPreInput() {
+		for(Module mod : instance.moduleManager.getModules()) {
+			if(mod.isToggled()) mod.onPreInput();
+		}
+	}
 	public static void onRender2D() {
 		for(Module mod : instance.moduleManager.getModules()) {
 			if(mod.isToggled()) mod.onRender2D();

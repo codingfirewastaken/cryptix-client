@@ -14,6 +14,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.BlockSand;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
@@ -112,7 +113,7 @@ public class Scaffold extends Module{
 	                tower25 = !tower25;
 				}else {
 					mc.thePlayer.motionY = 0.05;
-					MovementUtils.strafe(speed);
+					MovementUtils.strafe(speed * 1.2);
 				}
             } else if (mc.thePlayer.posY % 1.0 < 0.1 && !mc.thePlayer.onGround) {
                 mc.thePlayer.setPosition(mc.thePlayer.posX, Math.floor(mc.thePlayer.posY), mc.thePlayer.posZ);
@@ -339,31 +340,33 @@ public class Scaffold extends Module{
 	    }
 	}
 
-    private boolean attemptPlaceAt(BlockPos pos, EnumFacing[] facings, PlayerControllerMP controller) {
+	private boolean attemptPlaceAt(BlockPos pos, EnumFacing[] facings, PlayerControllerMP controller) {
         EnumFacing[] enumFacingArray = facings;
         int n = facings.length;
         int n2 = 0;
-        if(pos == null || facings == null || controller == null) {
-        	return false;
-        }
         while (n2 < n) {
             EnumFacing facing = enumFacingArray[n2];
             if(jump) {
-            	jump = false;
-            	return false;
+                jump = false;
+                return false;
             }
             BlockPos offsetPos = pos.offset(facing.getOpposite());
-            if (mc.theWorld.getBlockState(offsetPos).getBlock().canCollideCheck(mc.theWorld.getBlockState(offsetPos), false) && this.shouldPlaceBlock()) {
-                Vec3 hitVec = new Vec3((double)offsetPos.getX() + 0.5 + (double)facing.getFrontOffsetX() * 0.5, (double)offsetPos.getY() + 0.5 + (double)facing.getFrontOffsetY() * 0.5, (double)offsetPos.getZ() + 0.5 + (double)facing.getFrontOffsetZ() * 0.5);
+            IBlockState blockState = mc.theWorld.getBlockState(offsetPos);
+            Block block = blockState.getBlock();
+
+            if (block.canCollideCheck(blockState, false) && this.shouldPlaceBlock()) {
+                Vec3 hitVec = new Vec3((double)offsetPos.getX() + 0.5 + (double)facing.getOpposite().getFrontOffsetX() * 0.5, (double)offsetPos.getY() + 0.5 + (double)facing.getFrontOffsetY() * 0.5, (double)offsetPos.getZ() + 0.5 + (double)facing.getOpposite().getFrontOffsetZ() * 0.5);
                 strictYaw = RotationUtils.rotateToVec3(hitVec)[0];
                 strictPitch = RotationUtils.rotateToVec3(hitVec)[1];
-                controller.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem(), offsetPos, facing, hitVec);
-                if (!silentSwing.getBoolean()) {
-                    mc.thePlayer.swingItem();
-                } else {
-                    mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
+                if (mc.thePlayer.getDistanceSq(hitVec.xCoord, hitVec.yCoord, hitVec.zCoord) <= 36.0) {
+                    controller.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem(), offsetPos, facing, hitVec);
+                    if (!silentSwing.getBoolean()) {
+                        mc.thePlayer.swingItem();
+                    } else {
+                        mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
+                    }
+                    return true;
                 }
-                return true;
             }
             ++n2;
         }

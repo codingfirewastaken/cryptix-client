@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -17,6 +18,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import cryptix.Client;
+import cryptix.altmanager.AltManagerGui;
 import cryptix.gui.clickgui.Setting;
 import cryptix.module.Module;
 import cryptix.module.visual.ClickGUI;
@@ -26,6 +28,7 @@ public class JsonHandler {
     public static File config = new File(ROOT_DIR, "config");
     public static File modules = new File(config, "latest.json");
     public static File keybinds = new File(ROOT_DIR, "keybinds.json");
+    public static File alts = new File(ROOT_DIR, "alts.json");
     private static HashSet<String> modBlackList = Sets.newHashSet(ClickGUI.class.getName());
     public static Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
     public static JsonParser jsonParser = new JsonParser();
@@ -43,6 +46,35 @@ public class JsonHandler {
             saveKeybinds();
         else
             loadKeybinds();
+    }
+    
+    public static void saveAlts() {
+    	try {
+	    	JsonObject json = new JsonObject();
+	        for (String alt : AltManagerGui.crackedAlts) {
+	        	json.addProperty(alt, false);
+	        }
+	        PrintWriter save = new PrintWriter(new FileWriter(alts));
+	        save.println(prettyGson.toJson(json));
+	        save.close();
+    	} catch (IOException e) {
+			e.printStackTrace();
+		}
+    }
+    
+    public static void loadAlts() {
+    	try {
+            BufferedReader load = new BufferedReader(new FileReader(alts));
+            JsonObject json = (JsonObject) jsonParser.parse(load);
+            load.close();
+            AltManagerGui.crackedAlts.clear();
+            for (Entry<String, JsonElement> entry : json.entrySet()) {
+            	AltManagerGui.crackedAlts.add(entry.getKey());
+            }
+    	} catch (IOException e) {
+			e.printStackTrace();
+		}
+            
     }
 
     public static void saveMods() {

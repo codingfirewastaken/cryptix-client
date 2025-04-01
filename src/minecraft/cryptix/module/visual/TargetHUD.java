@@ -49,7 +49,7 @@ public class TargetHUD extends Module{
 	    	alpha = (int) Utils.lerp(alpha, 0, 0.5F);
 	        target = null;
 	    }
-	    if (Mouse.isButtonDown(0)) {
+	    if (Mouse.isButtonDown(0) && mc.currentScreen instanceof GuiChat) {
 	        if (!isDragging) {
 	            isDragging = true;
 	        }

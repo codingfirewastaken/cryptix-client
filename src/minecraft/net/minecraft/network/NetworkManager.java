@@ -196,16 +196,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
     			return;
     		}
     		if(Client.instance.settingsManager.getSettingByName(disabler, "BlocksMC").getBoolean()) {
-    			if (packetIn instanceof S07PacketRespawn) {
-                    disabling = true;
-                } else if (packetIn instanceof C02PacketUseEntity) {
-                    disabling = false;
-                } else if (packetIn instanceof C03PacketPlayer && Client.mc.thePlayer.ticksExisted <= 10) {
-                    disabling = true;
-                } else if (packetIn instanceof C0FPacketConfirmTransaction && disabling && Client.mc.thePlayer.ticksExisted < 350) {
-                    ((C0FPacketConfirmTransaction) packetIn).setUid(
-                    		Client.mc.thePlayer.ticksExisted % 2 == 0 ? Short.MIN_VALUE : Short.MAX_VALUE);
-                }
+    			
     		}
     	}
     	if(noslow.isToggled()) {

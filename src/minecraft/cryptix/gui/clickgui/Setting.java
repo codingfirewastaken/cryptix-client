@@ -1,6 +1,7 @@
 package cryptix.gui.clickgui;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import cryptix.module.Module;
 
@@ -27,6 +28,16 @@ public class Setting {
         this.parent = parent;
         this.sval = sval;
         this.options = options;
+        this.mode = "ModeBox";
+        this.visible = true;
+        parent.addSetting(this);
+    }
+    
+    public Setting(String name, Module parent, String sval, Collection<String> options) {
+        this.name = name;
+        this.parent = parent;
+        this.sval = sval;
+        this.options = new ArrayList<String>(options);
         this.mode = "ModeBox";
         this.visible = true;
         parent.addSetting(this);

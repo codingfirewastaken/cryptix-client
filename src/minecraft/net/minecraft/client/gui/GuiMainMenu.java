@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 import cryptix.altmanager.AltManagerGui;
+import cryptix.other.JsonHandler;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -270,6 +271,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
 
         if (button.id == 14)
         {
+        	JsonHandler.loadAlts();
         	this.mc.displayGuiScreen(new AltManagerGui(this));
         }
 

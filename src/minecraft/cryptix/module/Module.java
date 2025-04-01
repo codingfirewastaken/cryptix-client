@@ -83,6 +83,7 @@ public class Module {
 	public void onEnable() {}
 	public void onPreMotion() {}
 	public void onPostMotion() {}
+	public void onPreInput() {}
 	public void onRender2D() {}
 	public void onRender3D() {}
 	

@@ -669,12 +669,12 @@ public class EntityPlayerSP extends AbstractClientPlayer
         {
             --this.timeUntilPortal;
         }
-
         boolean flag = this.movementInput.jump;
         boolean flag1 = this.movementInput.sneak;
         float f = 0.8F;
         boolean flag2 = this.movementInput.moveForward >= f;
         this.movementInput.updatePlayerMoveState();
+        Client.onPreInput();
         Module noslow = Client.instance.moduleManager.getModuleByName("NoSlow");
         if (this.isUsingItem() && !this.isRiding() && (!noslow.isToggled() || Client.instance.settingsManager.getSettingByName(noslow, "Mode").getString().equalsIgnoreCase("BlocksMC")))
         {

@@ -33,6 +33,7 @@ public class ModuleManager {
 		modules.add(new Disabler());
 		modules.add(new StaffDetector());
 		//Movement
+		modules.add(new Fly());
 		modules.add(new InvMove());
 		modules.add(new KeepSprint());
 		modules.add(new LongJump());
@@ -40,6 +41,7 @@ public class ModuleManager {
 		modules.add(new Speed());
 		modules.add(sprint = new Sprint());
 		modules.add(new Step());
+		modules.add(new TargetStrafe());
 		//Player
 		modules.add(antiVoid = new AntiVoid());
 		modules.add(bedNuker = new BedNuker());

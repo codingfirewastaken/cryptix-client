@@ -5,6 +5,7 @@ import java.util.Random;
 
 import cryptix.altmanager.AltManagerGui;
 import cryptix.altmanager.SessionChanger;
+import cryptix.other.JsonHandler;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
@@ -55,6 +56,7 @@ public class CrackedLoginGui extends GuiScreen {
     protected void actionPerformed(GuiButton button) throws IOException {
         if (button.id == 0) {
         	if(!usernameField.getText().equals("")) {
+        		parent.crackedAlts.add(usernameField.getText());
         		SessionChanger.instance().loginCracked(usernameField.getText());
         		this.mc.displayGuiScreen(parent);
         	}

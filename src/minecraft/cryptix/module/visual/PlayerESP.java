@@ -43,7 +43,7 @@ public class PlayerESP extends Module{
 	}
 	
 	public boolean isBlack(Entity retard) {
-		return !retard.isDead && retard instanceof EntityPlayer && !AntiBot.isBot(retard);
+		return !retard.isDead && retard instanceof EntityPlayer && !AntiBot.isBot(retard) && retard != mc.thePlayer;
 	}
 
 }

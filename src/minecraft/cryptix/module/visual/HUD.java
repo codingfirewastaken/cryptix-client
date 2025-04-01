@@ -56,12 +56,11 @@ public class HUD extends Module{
 			int n4 = (int)yOffset * 11;
 			int n5 = sr.getScaledWidth() - n2;
 			float alpha = (float) Math.min(n1, startTime / 2.0);
-			System.out.println(alpha);
 			if(background.getBoolean()) {
 				Gui.drawRect(animation.getBoolean() ? n5 + 4 - alpha + n1 : n5 + 4, n4, n5 + n2, n4 + n3, 0x80000000);
 			}
 			String moduleName = String.valueOf(String.valueOf(m.getDisplayName())) + "§7";
-			fr.drawStringWithShadow(lowercase.getBoolean() ? m.getDisplayName().toLowerCase() : moduleName, animation.getBoolean() ? n5 + 7 - alpha + n1 : xOffset - 2, yOffset * 11 + 2, isssssskoldt);
+			fr.drawString(lowercase.getBoolean() ? m.getDisplayName().toLowerCase() : moduleName, animation.getBoolean() ? n5 + 7 - alpha + n1 : xOffset - 2, yOffset * 11 + 2, isssssskoldt);
 			yOffset++;
 		}
 	}

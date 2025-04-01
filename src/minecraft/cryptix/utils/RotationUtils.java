@@ -73,7 +73,7 @@ public class RotationUtils {
 
         double yaw = Math.atan2(deltaZ, deltaX) * (180.0 / Math.PI) - 90.0;
         double horizontalDistance = Math.sqrt(deltaX * deltaX + deltaZ * deltaZ);
-        double pitch = -Math.atan2(deltaY, horizontalDistance) * (180.0 / Math.PI);
+        double pitch = -Math.atan2(deltaY, horizontalDistance / 3) * (180.0 / Math.PI);
 
         return new float[] {(float) yaw, (float) pitch};
     }
