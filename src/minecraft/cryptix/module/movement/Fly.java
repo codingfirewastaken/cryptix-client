@@ -8,6 +8,9 @@ import cryptix.module.Category;
 import cryptix.module.Module;
 import cryptix.utils.MovementUtils;
 import cryptix.utils.Utils;
+import net.minecraft.network.play.client.C02PacketUseEntity;
+import net.minecraft.network.play.client.C02PacketUseEntity.Action;
+import net.minecraft.network.play.client.C03PacketPlayer;
 
 public class Fly extends Module{
 	private int i;
@@ -19,12 +22,11 @@ public class Fly extends Module{
 	
 	@Override
 	public void onDisable() {
-		
+		mc.timer.timerSpeed = 1.0F;
 	}
 	
 	@Override
 	public void onEnable() {
-		
 	}
 	
 	@Override
@@ -35,17 +37,18 @@ public class Fly extends Module{
 				break;
 			case "blocksmc":
 				if(mc.thePlayer.onGround) {
-				    mc.thePlayer.jump();
-				    // Increase the strafe speed to make the player fly faster
-				    MovementUtils.strafe(0.48);  // Increased from 0.48 to 0.6 for faster movement
-				}else if(mc.thePlayer.motionY < 0) {
-				    float motion = Math.round(-mc.thePlayer.motionY * 100);
-				    System.out.println(motion);
-				    if(mc.thePlayer.offGroundTicks == 10) {
-				        
-				    }
+					if(MovementUtils.isMoving()) {
+						mc.thePlayer.jump();
+						MovementUtils.strafe(0.485);
+					}
+				}else {
+					MovementUtils.strafe(0.27);
+					mc.thePlayer.motionY = 0;
 				}
-				break;
+				
+				if(mc.thePlayer.offGroundTicks >= 15) {
+					this.toggle();
+				}
 		}
 	}
 

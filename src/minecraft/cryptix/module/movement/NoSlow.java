@@ -9,6 +9,7 @@ import cryptix.module.Category;
 import cryptix.module.Module;
 import cryptix.utils.MovementUtils;
 import cryptix.utils.Utils;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
@@ -27,30 +28,37 @@ public class NoSlow extends Module{
 		Client.instance.settingsManager.addSetting(mode = new Setting("Mode", this, "Vanilla", modes));
 	}
 	
-	 @Override
-	 public void onPreMotion() {
-		 this.setDisplayName(this.getName() + this.getUppercaseSuffix(mode.getString()));
-		 if(mc.thePlayer.isUsingItem()) {
-			 if(tick == 1 && mode.getString().equalsIgnoreCase("BlocksMC") && Utils.holdingSword()) {
-				 sendPacket(new C07PacketPlayerDigging(Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
-			 }
-			 if(MovementUtils.isMoving() && !mc.thePlayer.isCollidedHorizontally && !mc.thePlayer.isSneaking() && mc.gameSettings.keyBindForward.isKeyDown() && !mode.getString().equalsIgnoreCase("BlocksMC")) {
-				 mc.thePlayer.setSprinting(true);
-			 }
-			 if(mode.getString().equalsIgnoreCase("NCP")) {
-				 sendPacket(new C07PacketPlayerDigging(Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.UP));
-			 }
-			 if(mode.getString().equalsIgnoreCase("BlocksMC") && tick > 1 && Utils.holdingSword()) {
-				 if(!block) {
-					 sendPacket(new C07PacketPlayerDigging(Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
-					 sendPacket(new C08PacketPlayerBlockPlacement(mc.thePlayer.getHeldItem()));
-					 block = true;
-				 }else {
-					 sendPacket(new C08PacketPlayerBlockPlacement(mc.thePlayer.getHeldItem()));
-					 block = false;
-				 }
-			 }
-			 tick++;
+	@Override
+	public void onPreMotion() {
+		this.setDisplayName(this.getName() + this.getUppercaseSuffix(mode.getString()));
+		if(mc.thePlayer.isUsingItem()) {
+			if(tick == 1 && mode.getString().equalsIgnoreCase("BlocksMC") && Utils.holdingSword()) {
+				sendPacket(new C07PacketPlayerDigging(Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
+			}
+			if(MovementUtils.isMoving() && !mc.thePlayer.isCollidedHorizontally && !mc.thePlayer.isSneaking() && mc.gameSettings.keyBindForward.isKeyDown() && !mode.getString().equalsIgnoreCase("BlocksMC")) {
+				mc.thePlayer.setSprinting(true);
+			}
+			if(mode.getString().equalsIgnoreCase("NCP")) {
+				sendPacket(new C07PacketPlayerDigging(Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.UP));
+			}
+			if (mode.getString().equalsIgnoreCase("BlocksMC")) {
+				if(mode.getString().equalsIgnoreCase("BlocksMC")) {
+	                 int slot = -1;
+
+	                 for (int i = 1; i < 45; i++) {
+	                     ItemStack stack = mc.thePlayer.inventory.getStackInSlot(i);
+	                     if (stack == null) {
+	                         slot = i;
+	                         break;
+	                     }
+	                 }
+
+	                 if (slot != -1 && mc.thePlayer.ticksExisted % 3 == 1) {
+	                     sendPacket(new C08PacketPlayerBlockPlacement(new BlockPos(-1, -1, -1), 0, mc.thePlayer.inventory.getStackInSlot(slot), 0, 0, 0));
+	                 }
+	             }
+			}
+			tick++;
 		 }else {
 			 tick = 0;
 		 }

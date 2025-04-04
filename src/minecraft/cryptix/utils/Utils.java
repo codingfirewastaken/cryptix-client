@@ -19,6 +19,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
+import net.minecraft.network.play.client.C01PacketChatMessage;
 
 public class Utils {
 	private static final Minecraft mc = Minecraft.getMinecraft();
@@ -54,6 +55,10 @@ public class Utils {
 	
 	public static void sendClientChatMessage(String msg) {
 		mc.ingameGUI.getChatGUI().printChatMessage(new ChatComponentText("§f["+"§aCryptix"+"§f] "+msg));
+	}
+	
+	public static void sendServerChatMessage(String msg) {
+		mc.getNetHandler().addToSendQueue(new C01PacketChatMessage(msg));
 	}
 	
 	public static float lerp(float start, float end, float alpha) {

@@ -29,7 +29,7 @@ public class KillAura extends Module{
     private long lastAttackTime;
     private boolean blocking, b1, b2;
     private float[] lastRotation;
-    private Setting switchDelay, rotationRange, blockRange, attackRange, minCPS, maxCPS, autoblock,smoothing, team, movefix;
+    private Setting switchDelay, rotationRange, blockRange, attackRange, minCPS, maxCPS, autoblock,smoothing, team, movefix, rotateBody;
 	public KillAura() {
 		super("KillAura", 0, Category.COMBAT);
 		ArrayList<String> autoblocks = new ArrayList<String>(Arrays.asList("None", "Vanilla", "BlocksMC", "NCP"));
@@ -41,6 +41,7 @@ public class KillAura extends Module{
 		Client.instance.settingsManager.addSetting(rotationRange = new Setting("Rotation Range", this, 3, 3, 10, false));
 		Client.instance.settingsManager.addSetting(smoothing = new Setting("Rotation Smoothing", this, 0, 0, 10, true));
 		Client.instance.settingsManager.addSetting(switchDelay = new Setting("Switch Delay", this, 150, 0, 1000, true));
+		Client.instance.settingsManager.addSetting(rotateBody = new Setting("Rotate Body", this, false));
 		Client.instance.settingsManager.addSetting(team = new Setting("Teams", this, true));
 		Client.instance.settingsManager.addSetting(movefix = new Setting("Movefix", this, false));
 	}
@@ -93,6 +94,9 @@ public class KillAura extends Module{
             	float yawDifference = targetYaw - lastRotation[0];
             	yawDifference = Math.max(-19, Math.min(19, yawDifference));
             	mc.thePlayer.rotationYawHead = targetYaw + yawDifference;
+            	if(rotateBody.getBoolean()) {
+            		mc.thePlayer.renderYawOffset = targetYaw + yawDifference;
+            	}
             	lastRotation = new float[] {targetYaw, targetPitch};
             	mc.thePlayer.rotationPitchHead = targetPitch;
             }
@@ -107,7 +111,6 @@ public class KillAura extends Module{
             			sendPacket(new C08PacketPlayerBlockPlacement(mc.thePlayer.getHeldItem()));
             		    blocking = false;
             		} else {
-            		    long randomDelay = random.nextInt(200) + 100;
             		    currentTime = System.currentTimeMillis();
             		    if(b1 && isTargetInRange(target, attackRange.getValue())) {
             		    	attack(target, true);

@@ -10,10 +10,11 @@ import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
 
 public class ChestStealer extends Module{
-	private int delay;
-	private Setting delaySetting, closeChest, custom;
+	private int delay, startDelay;
+	private Setting startDelaySetting, delaySetting, closeChest, custom;
 	public ChestStealer() {
 		super("ChestStealer", 0, Category.PLAYER);
+		Client.instance.settingsManager.addSetting(startDelaySetting = new Setting("Start Delay §aticks", this, 2, 0, 10, false));
 		Client.instance.settingsManager.addSetting(delaySetting = new Setting("Delay §aticks", this, 2, 0, 10, false));
 		Client.instance.settingsManager.addSetting(closeChest = new Setting("Auto close", this, true));
 		Client.instance.settingsManager.addSetting(custom = new Setting("Custom chest", this, false));
@@ -27,6 +28,10 @@ public class ChestStealer extends Module{
 	@Override
 	public void onPreMotion() {
 		if(mc.thePlayer.openContainer instanceof ContainerChest) {
+			startDelay++;
+			if(startDelay < startDelaySetting.getValue()) {
+				return;
+			}
 			if(!custom.getBoolean()) {
 				if(!((ContainerChest) mc.thePlayer.openContainer).getLowerChestInventory().getName().equals(Blocks.chest.getLocalizedName())) {
 					return;
@@ -52,6 +57,8 @@ public class ChestStealer extends Module{
             } else {
                 delay++;
             }
+		}else {
+			startDelay = 0;
 		}
 	}
 }

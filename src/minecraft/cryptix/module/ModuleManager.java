@@ -13,11 +13,14 @@ import net.minecraft.client.settings.KeyBinding;
 
 public class ModuleManager {
 	private static ArrayList<Module> modules = new ArrayList<Module>();
+	public Criticals criticals;
 	public KillAura killAura;
+	public PlayerCrasher playerCrasher;
 	public Sprint sprint;
 	public AntiVoid antiVoid;
 	public BedNuker bedNuker;
 	public NoFall noFall;
+	public Phase phase;
 	public SafeWalk safeWalk;
 	public ClickGUI clickGUI;
 	public SessionInfo sessionInfo;
@@ -28,10 +31,12 @@ public class ModuleManager {
 		modules.add(new AntiBot());
 		modules.add(new AutoClicker());
 		modules.add(new Velocity());
+		modules.add(criticals = new Criticals());
 		modules.add(killAura = new KillAura());
 		//Exploit
 		modules.add(new Disabler());
 		modules.add(new StaffDetector());
+		modules.add(playerCrasher = new PlayerCrasher());
 		//Movement
 		modules.add(new Fly());
 		modules.add(new InvMove());
@@ -49,6 +54,7 @@ public class ModuleManager {
 		modules.add(new FastPlace());
 		modules.add(new InvManager());
 		modules.add(noFall = new NoFall());
+		modules.add(phase = new Phase());
 		modules.add(safeWalk = new SafeWalk());
 		modules.add(new Scaffold());
 		//Visual

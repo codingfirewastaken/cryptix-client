@@ -84,21 +84,13 @@ public class TargetStrafe extends Module{
 	}
 
 	private void handlePlayerMovement(double[] rotatedDirection) {
-	    if (shouldRequireSpace()) {
-	        if (isShiftKeyDown()) {
+	    if (requireSpace.getBoolean()) {
+	        if (Keyboard.isKeyDown(57)) {
 	            updatePlayerMovement(rotatedDirection);
 	        }
 	    } else {
 	        updatePlayerMovement(rotatedDirection);
 	    }
-	}
-
-	private boolean shouldRequireSpace() {
-	    return requireSpace.getBoolean();
-	}
-
-	private boolean isShiftKeyDown() {
-	    return Keyboard.isKeyDown(57);
 	}
 
 	private void updatePlayerMovement(double[] direction) {

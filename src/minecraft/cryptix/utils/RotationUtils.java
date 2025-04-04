@@ -37,7 +37,7 @@ public class RotationUtils {
     public static float smoothYaw(float targetYaw) {
         float deltaYaw = rotDistance(currentYaw == 0 ? mc.thePlayer.rotationYaw : currentYaw, targetYaw);
         currentYaw += deltaYaw;
-        return currentYaw;
+        return (float) (currentYaw + Math.random() * 4);
     }
 
     public static float smoothPitch(float targetPitch) {

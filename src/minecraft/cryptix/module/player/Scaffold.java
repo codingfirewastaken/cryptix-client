@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
+import org.lwjgl.input.Keyboard;
+
 import cryptix.Client;
 import cryptix.gui.clickgui.Setting;
 import cryptix.module.Category;
@@ -28,18 +30,19 @@ import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 
 public class Scaffold extends Module{
 	private Setting rotations, sprint, silentSwing, tower, towerSpeed, multiPlace;
 	private float strictYaw, strictPitch;
-	private int keepy_y, towerTick, lastSlot, placed;
+	private int keepy_y, towerTick, lastSlot, placed, rotationTick;
 	private boolean sprinting, tower25;
 	public static boolean jump;
 	public Scaffold() {
 		super("Scaffold", 0, Category.PLAYER);
 		ArrayList<String> rotModes = new ArrayList<String>();
-		rotModes.addAll(Arrays.asList("None", "Simple", "Strict", "Side"));
+		rotModes.addAll(Arrays.asList("None", "Simple", "Strict", "Side A", "Side B"));
 		ArrayList<String> sprintModes = new ArrayList<String>();
 		sprintModes.addAll(Arrays.asList("None", "Vanilla", "Keepy A", "Keepy B", "BlocksMC"));
 		ArrayList<String> towerModes = new ArrayList<String>();
@@ -56,6 +59,7 @@ public class Scaffold extends Module{
 	public void onEnable() {
 		keepy_y = (int) mc.thePlayer.posY;
 		lastSlot = mc.thePlayer.inventory.currentItem;
+		rotationTick = 0;
 		super.onEnable();
 	}
 	
@@ -68,6 +72,9 @@ public class Scaffold extends Module{
 	@Override
 	public void onPreMotion() {
 		sprint();
+		if(mc.gameSettings.keyBindJump.isKeyDown()) {
+			rotationTick = 0;
+		}
 		if(getHotbarBlockCount() != 0) {
 			if(getRotations()[0] != 0 && getRotations()[1] != 0) {
 				mc.thePlayer.rotationYawHead = getRotations()[0];
@@ -113,7 +120,7 @@ public class Scaffold extends Module{
 	                tower25 = !tower25;
 				}else {
 					mc.thePlayer.motionY = 0.05;
-					MovementUtils.strafe(speed * 1.2);
+					MovementUtils.strafe(speed * 1.1);
 				}
             } else if (mc.thePlayer.posY % 1.0 < 0.1 && !mc.thePlayer.onGround) {
                 mc.thePlayer.setPosition(mc.thePlayer.posX, Math.floor(mc.thePlayer.posY), mc.thePlayer.posZ);
@@ -126,15 +133,21 @@ public class Scaffold extends Module{
 		if(tower.getString().equalsIgnoreCase("2 tick")) {
 			double speed = (towerSpeed.getValue() / 10) * (mc.thePlayer.isPotionActive(Potion.moveSpeed) ? 1.3 : 1);
 			if (mc.thePlayer.posY % 1.0 <= 0.00153598) {
-	        	mc.thePlayer.setPosition(mc.thePlayer.posX, Math.floor(mc.thePlayer.posY), mc.thePlayer.posZ);
+				mc.thePlayer.setPosition(mc.thePlayer.posX, Math.floor(mc.thePlayer.posY), mc.thePlayer.posZ);
 	            mc.thePlayer.motionY = 0.42F;
 	            MovementUtils.strafe(speed);
+	            if(towerTick >= 15) {
+	            	mc.thePlayer.motionY = 0.05;
+					MovementUtils.strafe(speed * 1.1);
+	            	towerTick = 0;
+	            }
             } else if (mc.thePlayer.posY % 1.0 < 0.1 && !mc.thePlayer.onGround) {
                 mc.thePlayer.setPosition(mc.thePlayer.posX, Math.floor(mc.thePlayer.posY), mc.thePlayer.posZ);
             }
 			if(mc.thePlayer.onGround) {
 				MovementUtils.strafe(speed);
 			}
+			towerTick++;
 		}
 		if(sprinting) {
 			mc.thePlayer.motionX *= 0.8;
@@ -212,7 +225,7 @@ public class Scaffold extends Module{
 				yaw = strictYaw;
 				pitch = strictPitch;
 				break;
-			case "side":
+			case "side a":
 				final float playerYaw = RotationUtils.getMovementYaw() ;
 				yaw = playerYaw + 45;
 				Block block = mc.theWorld.getBlockState(getTargetBlockPos()).getBlock();
@@ -266,7 +279,20 @@ public class Scaffold extends Module{
 	            }
 				pitch = (float) (strictPitch < 70 ? 70 + Math.random() : strictPitch);
 				break;
-				
+			case "side b":
+				rotationTick++;
+				yaw = RotationUtils.getMovementYaw() + 80;
+				if(isDiagonal()) {
+					yaw = RotationUtils.getMovementYaw() + 35;
+				}
+				if(mc.gameSettings.keyBindRight.isKeyDown() && mc.gameSettings.keyBindForward.isKeyDown()) {
+					yaw = RotationUtils.getMovementYaw() + 35;
+				}
+				if(rotationTick > 30 && rotationTick < 120 && !mc.gameSettings.keyBindJump.isKeyDown()) {
+					yaw = RotationUtils.getMovementYaw() + 80;
+				}
+				pitch = 85;
+				break;
 				
 		}
 		return new float[] {yaw, pitch, bodyYaw};
@@ -356,6 +382,9 @@ public class Scaffold extends Module{
 
             if (block.canCollideCheck(blockState, false) && this.shouldPlaceBlock()) {
                 Vec3 hitVec = new Vec3((double)offsetPos.getX() + 0.5 + (double)facing.getOpposite().getFrontOffsetX() * 0.5, (double)offsetPos.getY() + 0.5 + (double)facing.getFrontOffsetY() * 0.5, (double)offsetPos.getZ() + 0.5 + (double)facing.getOpposite().getFrontOffsetZ() * 0.5);
+                if((RotationUtils.rotateToVec3(hitVec)[0] % 360 + 360) % 360 > (mc.thePlayer.rotationYaw % 360 + 360) % 360 + 90 && (RotationUtils.rotateToVec3(hitVec)[0] % 360 + 360) % 360 < (mc.thePlayer.rotationYaw % 360 + 360) % 360 - 90) {
+                	return false;
+                }
                 strictYaw = RotationUtils.rotateToVec3(hitVec)[0];
                 strictPitch = RotationUtils.rotateToVec3(hitVec)[1];
                 if (mc.thePlayer.getDistanceSq(hitVec.xCoord, hitVec.yCoord, hitVec.zCoord) <= 36.0) {
@@ -371,6 +400,22 @@ public class Scaffold extends Module{
             ++n2;
         }
         return false;
+    }
+	
+	private EnumFacing getFacingFromYaw(float yaw) {
+        yaw = (yaw % 360 + 360) % 360;
+        
+        if (yaw >= 315 || yaw < 45) {
+            return EnumFacing.NORTH;
+        } else if (yaw >= 45 && yaw < 135) {
+            return EnumFacing.EAST;
+        } else if (yaw >= 135 && yaw < 225) {
+            return EnumFacing.SOUTH;
+        } else if (yaw >= 225 && yaw < 315) {
+            return EnumFacing.WEST;
+        }
+
+        return EnumFacing.NORTH;
     }
     
     private int getHotbarBlockCount() {
@@ -411,5 +456,10 @@ public class Scaffold extends Module{
         if (newitem != -1) {
             mc.thePlayer.inventory.currentItem = newitem;
         }
+    }
+    
+    private boolean isDiagonal() {
+        float yaw = (mc.thePlayer.rotationYaw % 360.0f + 360.0f) % 360.0f > 180.0f ? (mc.thePlayer.rotationYaw % 360.0f + 360.0f) % 360.0f - 360.0f : (mc.thePlayer.rotationYaw % 360.0f + 360.0f) % 360.0f;
+        return !(!(yaw >= -170.0f) || !(yaw <= 170.0f) || yaw >= -10.0f && yaw <= 10.0f || yaw >= 80.0f && yaw <= 100.0f) && (!(yaw >= -100.0f) || !(yaw <= -80.0f));
     }
 }

@@ -115,7 +115,7 @@ public class TargetHUD extends Module{
 		GlStateManager.pushMatrix();
 		GL11.glScaled(0.9, 0.9, 0.9);
 		GL11.glEnable(GL11.GL_BLEND);
-		mc.fontRendererObj.drawString(target.getDisplayName().getFormattedText(), (x + 33) / 0.9, (y + 4) / 0.9, new Color(255,255,255,adjustedAlpha).getRGB());
+		mc.fontRendererObj.drawStringWithShadow(target.getDisplayName().getFormattedText(), (x + 33) / 0.9, (y + 4) / 0.9, new Color(255,255,255,adjustedAlpha).getRGB());
 		GL11.glDisable(GL11.GL_BLEND);
 		GlStateManager.popMatrix();
 		if(armorInfo.getBoolean()) {

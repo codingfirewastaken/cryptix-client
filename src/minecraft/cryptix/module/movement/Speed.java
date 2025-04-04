@@ -12,7 +12,7 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.potion.Potion;
 
 public class Speed extends Module{
-	private Setting strafeMode, lowhopMode, speed, offset;
+	private Setting strafeMode, lowhopMode, speed, offset, dmgBoost;
 	private float prevSpeed;
 	public Speed() {
 		super("Speed", 0, Category.MOVEMENT);
@@ -23,6 +23,7 @@ public class Speed extends Module{
 		Client.instance.settingsManager.addSetting(lowhopMode = new Setting("Mode", this, "None", lowhopModes));
 		Client.instance.settingsManager.addSetting(speed = new Setting("Speed", this, 1, 0, 4, false));
 		Client.instance.settingsManager.addSetting(offset = new Setting("Offset", this, 0, -0.5, 0.5, false));
+		Client.instance.settingsManager.addSetting(dmgBoost = new Setting("Damage Boost", this, false));
 	}
 	
 	@Override
@@ -33,7 +34,7 @@ public class Speed extends Module{
 		}
 		if(mc.thePlayer.onGround && MovementUtils.isMoving()) {
 			mc.thePlayer.jump();
-			if(mc.thePlayer.isCollidedVertically && !lowhopMode.getString().equalsIgnoreCase("Vulcan New")) {
+			if(mc.thePlayer.isCollidedVertically && !lowhopMode.getString().equalsIgnoreCase("Vulcan New") && !mc.thePlayer.isUsingItem()) {
 				MovementUtils.strafe(mc.thePlayer.isPotionActive(Potion.moveSpeed) ? 0.55 : 0.4 * speed.getValue() + (offset.getValue()));
 			}
 			if(lowhopMode.getString().equalsIgnoreCase("Vulcan New")) {
@@ -70,6 +71,9 @@ public class Speed extends Module{
 		}
 		if(strafeMode.getString().equalsIgnoreCase("Full")) {
 			MovementUtils.strafe();
+		}
+		if(dmgBoost.getBoolean() && mc.thePlayer.hurtTime > 0) {
+			MovementUtils.strafe(0.5);
 		}
 	}
 

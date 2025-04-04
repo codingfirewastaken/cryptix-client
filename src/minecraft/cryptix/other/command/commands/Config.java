@@ -44,9 +44,6 @@ public class Config {
 				JsonHandler.saveMods(arg[1]);
                 Utils.sendClientChatMessage("Saved config as: " + arg[1]);
 			} else if (arg[0].toLowerCase().equalsIgnoreCase("list")) {
-				if(arg[1].isEmpty()) {
-            		return;
-            	}
                 File[] files = config.listFiles((dir, name) -> name.endsWith(".json"));
                 if (files != null && files.length > 0) {
                     Utils.sendClientChatMessage("Available config files:");

@@ -676,19 +676,11 @@ public class EntityPlayerSP extends AbstractClientPlayer
         this.movementInput.updatePlayerMoveState();
         Client.onPreInput();
         Module noslow = Client.instance.moduleManager.getModuleByName("NoSlow");
-        if (this.isUsingItem() && !this.isRiding() && (!noslow.isToggled() || Client.instance.settingsManager.getSettingByName(noslow, "Mode").getString().equalsIgnoreCase("BlocksMC")))
+        if (this.isUsingItem() && !this.isRiding() && (!noslow.isToggled()))
         {
-        	if(Client.instance.settingsManager.getSettingByName(noslow, "Mode").getString().equalsIgnoreCase("BlocksMC") && noslow.isToggled()) {
-        		if(!Utils.holdingSword()) {
-        			this.movementInput.moveStrafe *= 0.2F;
-            		this.movementInput.moveForward *= 0.2F;
-            		this.sprintToggleTimer = 0;
-        		}
-        	}else {
-        		this.movementInput.moveStrafe *= 0.2F;
-        		this.movementInput.moveForward *= 0.2F;
-        		this.sprintToggleTimer = 0;
-        	}
+        	this.movementInput.moveStrafe *= 0.2F;
+        	this.movementInput.moveForward *= 0.2F;
+        	this.sprintToggleTimer = 0;
         }
         this.sprintToggleTimer = 0;
 

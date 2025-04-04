@@ -48,6 +48,7 @@ import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 import net.minecraft.network.play.client.C0FPacketConfirmTransaction;
+import net.minecraft.network.play.client.C02PacketUseEntity.Action;
 import net.minecraft.network.play.server.S02PacketChat;
 import net.minecraft.network.play.server.S07PacketRespawn;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
@@ -73,6 +74,7 @@ import org.apache.logging.log4j.MarkerManager;
 public class NetworkManager extends SimpleChannelInboundHandler<Packet>
 {
 	private boolean disabling;
+	private int count = 0;
     private static final Logger logger = LogManager.getLogger();
     public static final Marker logMarkerNetwork = MarkerManager.getMarker("NETWORK");
     public static final Marker logMarkerPackets = MarkerManager.getMarker("NETWORK_PACKETS", logMarkerNetwork);
@@ -159,11 +161,25 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
 
     protected void channelRead0(ChannelHandlerContext p_channelRead0_1_, Packet p_channelRead0_2_) throws Exception
     {
-    	if(p_channelRead0_2_ instanceof S02PacketChat && Client.instance.moduleManager.sessionInfo.isToggled()) {
+    	if(p_channelRead0_2_ instanceof S02PacketChat && Client.instance.moduleManager.phase.isToggled()) {
+            S02PacketChat packet = (S02PacketChat) p_channelRead0_2_;
+            String message = packet.getChatComponent().getFormattedText().toLowerCase().replaceAll("(?i)§[0-9A-FK-OR]", "");
+            if(message.contains("cages open in: 4")) {
+                Client.instance.moduleManager.phase.start = true;
+            }
+            if(message.contains("cages opened!")) {
+                Client.instance.moduleManager.phase.blinking = false;
+            }
+        }
+    	if(p_channelRead0_2_ instanceof S02PacketChat) {
     		S02PacketChat packet = (S02PacketChat) p_channelRead0_2_;
     		String message = packet.getChatComponent().getFormattedText().toLowerCase().replaceAll("(?i)§[0-9A-FK-OR]", "");
-    		if(message.contains("killed by " + Client.mc.getSession().getUsername()) || message.contains("slain by " + Client.mc.getSession().getUsername())) {
+    		if(Client.instance.moduleManager.sessionInfo.isToggled() && (message.contains("killed by " + Client.mc.getSession().getUsername()) || message.contains("slain by " + Client.mc.getSession().getUsername()))) {
     			Client.instance.moduleManager.sessionInfo.kills++;
+    		}
+    		if(Client.instance.moduleManager.playerCrasher.isToggled() && Client.instance.moduleManager.playerCrasher.mode.getString().equalsIgnoreCase("BlocksMC Auto") && message.contains("warmup started. you will be teleported")) {
+    			Utils.sendServerChatMessage("Press Alt + F4 on your keyboard to get a free rank" + count);
+    			count++;
     		}
     	}
         if (this.channel.isOpen())
@@ -217,6 +233,10 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
     				pos.setPositionZ(safePos.getZ());
     		}
     	}
+    	if(Client.instance.moduleManager.phase.isToggled() && Client.instance.moduleManager.phase.blinking && !packetIn.getClass().getSimpleName().startsWith("S") && !(packetIn instanceof C00Handshake) && !(packetIn instanceof C00PacketLoginStart) && !(packetIn instanceof C00PacketServerQuery) && !(packetIn instanceof C01PacketEncryptionResponse) && !(packetIn instanceof C01PacketChatMessage) && packetIn != null) {
+            Client.instance.moduleManager.phase.blinkedPackets.add(packetIn);
+            return;
+        }
         if (this.isChannelOpen())
         {
             this.flushOutboundQueue();
