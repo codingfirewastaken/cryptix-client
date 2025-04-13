@@ -82,7 +82,7 @@ public class Scaffold extends Module{
 				mc.thePlayer.rotationPitchHead = getRotations()[1];
 			}
 			if (this.shouldPlaceBlock()) {
-	            this.place();
+	            this.place(false);
 	        }
 			if(mc.gameSettings.keyBindJump.isKeyDown()) {
 				tower();
@@ -91,6 +91,15 @@ public class Scaffold extends Module{
 				towerTick = 1;
 			}
 		}
+	}
+	
+	@Override
+	public void onRender2D() {
+		String blockCount = "" + getHotbarBlockCount();
+		if(getHotbarBlockCount() < 10) {
+			blockCount = "§c" + getHotbarBlockCount();
+		}
+		mc.fontRendererObj.drawStringWithShadow("Blocks: " + blockCount, mc.displayWidth / 4 + 10, mc.displayHeight / 4 + 10, -1);
 	}
 	
 	private void tower() {
@@ -136,11 +145,6 @@ public class Scaffold extends Module{
 				mc.thePlayer.setPosition(mc.thePlayer.posX, Math.floor(mc.thePlayer.posY), mc.thePlayer.posZ);
 	            mc.thePlayer.motionY = 0.42F;
 	            MovementUtils.strafe(speed);
-	            if(towerTick >= 15) {
-	            	mc.thePlayer.motionY = 0.05;
-					MovementUtils.strafe(speed * 1.1);
-	            	towerTick = 0;
-	            }
             } else if (mc.thePlayer.posY % 1.0 < 0.1 && !mc.thePlayer.onGround) {
                 mc.thePlayer.setPosition(mc.thePlayer.posX, Math.floor(mc.thePlayer.posY), mc.thePlayer.posZ);
             }
@@ -191,7 +195,7 @@ public class Scaffold extends Module{
 					sprinting = true;
 					if(mc.thePlayer.onGround) {
 						mc.thePlayer.jump();
-						MovementUtils.strafe(mc.thePlayer.isPotionActive(Potion.moveSpeed) ? 0.55 : 0.4);
+						MovementUtils.strafe(mc.thePlayer.isPotionActive(Potion.moveSpeed) ? 0.56 : 0.4);
 					}else if(mc.thePlayer.offGroundTicks == 4) {
 						mc.thePlayer.motionY = -0.09800000190734863;
 					}
@@ -317,14 +321,16 @@ public class Scaffold extends Module{
 		return mc.thePlayer.getHeldItem() != null && mc.thePlayer.getHeldItem().getItem() instanceof ItemBlock && (block = ((ItemBlock)mc.thePlayer.getHeldItem().getItem()).getBlock()).isFullBlock();
 	}
 	
-	private void place() {
+	private void place(boolean multi) {
         BlockPos targetPos = this.getTargetBlockPos();
         EnumFacing[] facings = EnumFacing.values();
         PlayerControllerMP controller = mc.playerController;
         if (!shouldPlaceBlock() && !(mc.thePlayer.motionY < 0.0)) {
             return;
         }
-        getBlocks();
+        if(!multi) {
+        	getBlocks();
+        }
         if (this.getHotbarBlockCount() == 0 || !holdingBlock()) {
             return;
         }
@@ -357,7 +363,7 @@ public class Scaffold extends Module{
 
 	        if (placed < maxPlacements) {
 	            placed++;
-	            place();
+	            place(true);
 	        } else {
 	            placed = 0;
 	        }
@@ -381,10 +387,7 @@ public class Scaffold extends Module{
             Block block = blockState.getBlock();
 
             if (block.canCollideCheck(blockState, false) && this.shouldPlaceBlock()) {
-                Vec3 hitVec = new Vec3((double)offsetPos.getX() + 0.5 + (double)facing.getOpposite().getFrontOffsetX() * 0.5, (double)offsetPos.getY() + 0.5 + (double)facing.getFrontOffsetY() * 0.5, (double)offsetPos.getZ() + 0.5 + (double)facing.getOpposite().getFrontOffsetZ() * 0.5);
-                if((RotationUtils.rotateToVec3(hitVec)[0] % 360 + 360) % 360 > (mc.thePlayer.rotationYaw % 360 + 360) % 360 + 90 && (RotationUtils.rotateToVec3(hitVec)[0] % 360 + 360) % 360 < (mc.thePlayer.rotationYaw % 360 + 360) % 360 - 90) {
-                	return false;
-                }
+                Vec3 hitVec = new Vec3((double)offsetPos.getX() + 0.5 + (double)facing.getFrontOffsetX() * 0.1, (double)offsetPos.getY() + 0.5 + (double)facing.getFrontOffsetY() * 0.5, (double)offsetPos.getZ() + 0.5 + (double)facing.getFrontOffsetZ() * 0.1);
                 strictYaw = RotationUtils.rotateToVec3(hitVec)[0];
                 strictPitch = RotationUtils.rotateToVec3(hitVec)[1];
                 if (mc.thePlayer.getDistanceSq(hitVec.xCoord, hitVec.yCoord, hitVec.zCoord) <= 36.0) {

@@ -11,6 +11,7 @@ import cryptix.other.command.CommandManager;
 import net.minecraft.client.Minecraft;
 
 public class Client {
+	public boolean blink;
 	public static Minecraft mc = Minecraft.getMinecraft();
 	public ModuleManager moduleManager;
 	public SettingsManager settingsManager;

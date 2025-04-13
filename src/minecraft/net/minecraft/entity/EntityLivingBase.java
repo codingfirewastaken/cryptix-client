@@ -1143,7 +1143,7 @@ public abstract class EntityLivingBase extends Entity
 
     private int getArmSwingAnimationEnd()
     {
-        return this.isPotionActive(Potion.digSpeed) ? 6 - (1 + this.getActivePotionEffect(Potion.digSpeed).getAmplifier()) * 1 : (this.isPotionActive(Potion.digSlowdown) ? 6 + (1 + this.getActivePotionEffect(Potion.digSlowdown).getAmplifier()) * 2 : 6);
+        return this.isPotionActive(Potion.digSpeed) ? 6 - (1 + this.getActivePotionEffect(Potion.digSpeed).getAmplifier()) * 1 : (this.isPotionActive(Potion.digSlowdown) ? 6 + (1 + this.getActivePotionEffect(Potion.digSlowdown).getAmplifier()) * 2 : 6) - (Client.instance.moduleManager.aminations.isToggled() && this == Client.mc.thePlayer ? (int)Client.instance.moduleManager.aminations.speed.getValue() : 0);
     }
 
     public void swingItem()

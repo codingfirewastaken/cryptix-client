@@ -1,5 +1,7 @@
 package cryptix.utils;
 
+import java.util.Random;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.BlockPos;
@@ -16,11 +18,8 @@ public class RotationUtils {
         double y = ent.posY + ent.getEyeHeight() / 2.0;
         return getRotationFromPosition(x, z, y);
     }
-    public static float[] getRotationsBlock(final BlockPos blockPos) {
-        final double n = blockPos.getX() + 0.45 - mc.thePlayer.posX;
-        final double n2 = blockPos.getY() + 0.45 - (mc.thePlayer.posY + mc.thePlayer.getEyeHeight());
-        final double n3 = blockPos.getZ() + 0.45 - mc.thePlayer.posZ;
-        return new float[] { mc.thePlayer.rotationYaw + MathHelper.wrapAngleTo180_float((float)(Math.atan2(n3, n) * 57.295780181884766) - 90.0f - mc.thePlayer.rotationYaw), MathHelper.clamp_float(mc.thePlayer.rotationPitch + MathHelper.wrapAngleTo180_float((float)(-(Math.atan2(n2, MathHelper.sqrt_double(n * n + n3 * n3)) * 57.295780181884766)) - mc.thePlayer.rotationPitch), -90, 90) };
+    public static float[] getRotationsBlock(final BlockPos pos) {
+        return getRotationFromPosition(pos.getX() + 0.5, pos.getZ() + 0.5, pos.getY());
     }
     
     public static float[] getRotationFromPosition(double x, double z, double y) {
@@ -35,33 +34,47 @@ public class RotationUtils {
     }
 
     public static float smoothYaw(float targetYaw) {
-        float deltaYaw = rotDistance(currentYaw == 0 ? mc.thePlayer.rotationYaw : currentYaw, targetYaw);
-        currentYaw += deltaYaw;
-        return (float) (currentYaw + Math.random() * 4);
+    	float playerYaw = mc.thePlayer.rotationYaw;
+
+        if (currentYaw == 0f) currentYaw = playerYaw;
+
+        float deltaYaw = rotDistance(currentYaw, targetYaw);
+
+        float smoothing = Math.min(Math.max(Math.abs(deltaYaw) / 50f, 0.05f), 1.0f);
+
+        currentYaw += deltaYaw * smoothing;
+
+        return currentYaw;
     }
 
     public static float smoothPitch(float targetPitch) {
+    	float playerPitch = mc.thePlayer.rotationPitch;
+
+        if (currentPitch == 0f) currentPitch = playerPitch;
+
         float deltaPitch = rotDistance(currentPitch, targetPitch);
-        float multi = (float) (Math.random() * 9);
 
-        currentPitch += deltaPitch;
+        float smoothing = (float) Math.min(Math.max(Math.abs(deltaPitch) / 90f + Math.random(), 0.05f), 1.0f);
 
-        if(currentPitch + multi < 90) {
-        	return currentPitch + multi;
-        }else {
-        	return currentPitch;
-        }
+        currentPitch += deltaPitch * smoothing;
+
+        return currentPitch;
     }
 
     public static float rotDistance(float src, float target) {
-        float dy = (target % 360) - src % 360;
-        if (dy > 180) dy -= 360;
-        else if (dy < -180) dy += 360;
-        return dy;
+        float difference = wrapAngleTo180(target - src);
+        return difference;
     }
 
-    public static float randomizeAngle(float angle, float maxRandom) {
-        return (float) (angle + (Math.random() * maxRandom * 2 - maxRandom));
+    public static float wrapAngleTo180(float angle) {
+        angle %= 360f;
+        if (angle >= 180f) angle -= 360f;
+        if (angle < -180f) angle += 360f;
+        return angle;
+    }
+
+    public static float clamp(float value, float min, float max) {
+        return Math.max(min, Math.min(max, value));
     }
 	
 	public static float[] rotateToVec3(Vec3 targetVec) {
@@ -73,7 +86,7 @@ public class RotationUtils {
 
         double yaw = Math.atan2(deltaZ, deltaX) * (180.0 / Math.PI) - 90.0;
         double horizontalDistance = Math.sqrt(deltaX * deltaX + deltaZ * deltaZ);
-        double pitch = -Math.atan2(deltaY, horizontalDistance / 3) * (180.0 / Math.PI);
+        double pitch = -Math.atan2(deltaY, horizontalDistance) * (180.0 / Math.PI);
 
         return new float[] {(float) yaw, (float) pitch};
     }

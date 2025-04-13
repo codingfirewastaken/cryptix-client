@@ -1,7 +1,12 @@
 package net.minecraft.client.entity;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import cryptix.Client;
 import cryptix.module.Module;
+import cryptix.other.DelayedPacket;
 import cryptix.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MovingSoundMinecartRiding;
@@ -33,6 +38,8 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C01PacketChatMessage;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
@@ -58,6 +65,8 @@ import net.minecraft.world.World;
 
 public class EntityPlayerSP extends AbstractClientPlayer
 {
+	public boolean blink;
+	public int blinkedTicks;
     public final NetHandlerPlayClient sendQueue;
     private final StatFileWriter statWriter;
     private double lastReportedPosX;
@@ -115,10 +124,10 @@ public class EntityPlayerSP extends AbstractClientPlayer
 
     public void onUpdate()
     {
+    	Client.instance.clickGui.alpha = (int) Utils.lerp(Client.instance.clickGui.alpha, 100, 0.5F);
         if (this.worldObj.isBlockLoaded(new BlockPos(this.posX, 0.0D, this.posZ)))
         {
             super.onUpdate();
-
             if (this.isRiding())
             {
                 this.sendQueue.addToSendQueue(new C03PacketPlayer.C05PacketPlayerLook(this.rotationYaw, this.rotationPitch, this.onGround));
@@ -133,6 +142,19 @@ public class EntityPlayerSP extends AbstractClientPlayer
 
     public void onUpdateWalkingPlayer()
     {
+    	if(blinkedTicks > 2) {
+    		Client.instance.blink = false;
+    	}else {
+    		Client.instance.blink = true;
+    	}
+    	if (!Client.instance.blink) {
+	    	for (Packet p : NetworkManager.delayedPackets) {
+	    		mc.thePlayer.sendQueue.addToSendQueue(p);
+	    	}
+    		NetworkManager.delayedPackets.clear();
+    		blinkedTicks = 0;
+    	}
+    	blinkedTicks++;
     	if(this.onGround) {
     		this.onGroundTicks++;
     		this.offGroundTicks = 0;

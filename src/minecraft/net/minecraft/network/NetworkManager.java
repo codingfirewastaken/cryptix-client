@@ -2,9 +2,11 @@ package net.minecraft.network;
 
 import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.mojang.realmsclient.dto.RealmsServer.McoServerComparator;
 
 import cryptix.Client;
 import cryptix.module.Module;
+import cryptix.other.DelayedPacket;
 import cryptix.utils.Utils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -33,13 +35,16 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import java.net.InetAddress;
 import java.net.SocketAddress;
+import java.util.ArrayList;
 import java.util.Queue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.crypto.SecretKey;
 
 import net.minecraft.network.handshake.client.C00Handshake;
 import net.minecraft.network.login.client.C00PacketLoginStart;
 import net.minecraft.network.login.client.C01PacketEncryptionResponse;
+import net.minecraft.network.play.client.C00PacketKeepAlive;
 import net.minecraft.network.play.client.C01PacketChatMessage;
 import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.network.play.client.C03PacketPlayer;
@@ -48,11 +53,13 @@ import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 import net.minecraft.network.play.client.C0FPacketConfirmTransaction;
+import net.minecraft.network.play.client.C13PacketPlayerAbilities;
 import net.minecraft.network.play.client.C02PacketUseEntity.Action;
 import net.minecraft.network.play.server.S02PacketChat;
 import net.minecraft.network.play.server.S07PacketRespawn;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
 import net.minecraft.network.status.client.C00PacketServerQuery;
+import net.minecraft.network.status.client.C01PacketPing;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
@@ -73,6 +80,7 @@ import org.apache.logging.log4j.MarkerManager;
 
 public class NetworkManager extends SimpleChannelInboundHandler<Packet>
 {
+	public static CopyOnWriteArrayList<Packet> delayedPackets = new CopyOnWriteArrayList<Packet>();
 	private boolean disabling;
 	private int count = 0;
     private static final Logger logger = LogManager.getLogger();
@@ -181,6 +189,14 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
     			Utils.sendServerChatMessage("Press Alt + F4 on your keyboard to get a free rank" + count);
     			count++;
     		}
+    		if(Client.instance.moduleManager.autologin.isToggled()) {
+    			if(message.equalsIgnoreCase("/login <password>")) {
+    				Client.instance.moduleManager.autologin.login = true;
+    			}
+    			if(message.equalsIgnoreCase("/register <password> <password>")) {
+    				Client.instance.moduleManager.autologin.register = true;
+    			}
+    		}
     	}
         if (this.channel.isOpen())
         {
@@ -204,6 +220,10 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
 
     public void sendPacket(Packet packetIn)
     {
+    	if(packetIn instanceof C08PacketPlayerBlockPlacement) {
+    		Client.instance.moduleManager.noslow.block = true;
+    	}
+
     	Module disabler = Client.instance.moduleManager.getModuleByName("Disabler");
     	Module noslow = Client.instance.moduleManager.getModuleByName("NoSlow");
     	Module antiVoid = Client.instance.moduleManager.antiVoid;
@@ -212,7 +232,17 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
     			return;
     		}
     		if(Client.instance.settingsManager.getSettingByName(disabler, "BlocksMC").getBoolean()) {
-    			
+    			if(Client.instance.blink) {
+    				
+    				if(Client.mc.thePlayer != null && Client.mc.theWorld != null) {
+    					if(!(packetIn instanceof C00Handshake) && !(packetIn instanceof C00PacketLoginStart) && !(packetIn instanceof C00PacketServerQuery) && !(packetIn instanceof C01PacketPing) && !(packetIn instanceof C01PacketEncryptionResponse)) {
+    						delayedPackets.add(packetIn);
+    						return;
+    					}
+    				}else {
+    					delayedPackets.clear();
+    				}
+    	    	}
     		}
     	}
     	if(noslow.isToggled()) {
@@ -233,9 +263,15 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
     				pos.setPositionZ(safePos.getZ());
     		}
     	}
-    	if(Client.instance.moduleManager.phase.isToggled() && Client.instance.moduleManager.phase.blinking && !packetIn.getClass().getSimpleName().startsWith("S") && !(packetIn instanceof C00Handshake) && !(packetIn instanceof C00PacketLoginStart) && !(packetIn instanceof C00PacketServerQuery) && !(packetIn instanceof C01PacketEncryptionResponse) && !(packetIn instanceof C01PacketChatMessage) && packetIn != null) {
-            Client.instance.moduleManager.phase.blinkedPackets.add(packetIn);
-            return;
+    	if(!packetIn.getClass().getSimpleName().startsWith("S") && !(packetIn instanceof C00Handshake) && !(packetIn instanceof C00PacketLoginStart) && !(packetIn instanceof C00PacketServerQuery) && !(packetIn instanceof C01PacketEncryptionResponse) && !(packetIn instanceof C01PacketChatMessage) && packetIn != null) {
+    		if(Client.instance.moduleManager.phase.isToggled() && Client.instance.moduleManager.phase.blinking) {
+    			Client.instance.moduleManager.phase.blinkedPackets.add(packetIn);
+    			return;
+    		}
+    		if(Client.instance.moduleManager.killAura.isToggled() && Client.instance.moduleManager.killAura.blinking && Client.instance.moduleManager.killAura.target != null) {
+    			Client.instance.moduleManager.killAura.blinkedPackets.add(packetIn);
+    			return;
+    		}
         }
         if (this.isChannelOpen())
         {

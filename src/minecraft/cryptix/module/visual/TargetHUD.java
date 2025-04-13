@@ -49,28 +49,6 @@ public class TargetHUD extends Module{
 	    	alpha = (int) Utils.lerp(alpha, 0, 0.5F);
 	        target = null;
 	    }
-	    if (Mouse.isButtonDown(0) && mc.currentScreen instanceof GuiChat) {
-	        if (!isDragging) {
-	            isDragging = true;
-	        }
-	    } else {
-	        if (isDragging) {
-	            isDragging = false;
-	        }
-	    }
-
-	    if (isDragging) {
-	        int mouseX = Mouse.getX();
-	        int mouseY = Mouse.getY();
-	        ScaledResolution sr = new ScaledResolution(mc);
-	        int screenX = sr.getScaledWidth() / 2;
-	        int screenY = sr.getScaledHeight() / 2;
-	        offsetX += mouseX - lastMouseX;
-	        offsetY += mouseY - lastMouseY;
-	    }
-
-	    lastMouseX = Mouse.getX();
-	    lastMouseY = Mouse.getY();
 	}
 	
 	@Override
@@ -86,10 +64,29 @@ public class TargetHUD extends Module{
 		ScaledResolution sr = new ScaledResolution(mc);
 	    int screenX = sr.getScaledWidth() / 2;
 	    int screenY = sr.getScaledHeight() / 2;
+		if (Mouse.isButtonDown(0) && mc.currentScreen instanceof GuiChat && isHovered(Mouse.getX(), Mouse.getY())) {
+	        if (!isDragging) {
+	            isDragging = true;
+	        }
+	    } else {
+	        if (isDragging) {
+	            isDragging = false;
+	        }
+	    }
+
+	    if (isDragging) {
+	        int mouseX = Mouse.getX();
+	        int mouseY = Mouse.getY();
+	        offsetX += mouseX - lastMouseX;
+	        offsetY += mouseY - lastMouseY;
+	    }
+
+	    lastMouseX = Mouse.getX();
+	    lastMouseY = Mouse.getY();
 	    int x = screenX + (offsetX / 2);
 	    int y = screenY - (offsetY / 2);
 		int height = 40;
-		int width = 100;
+		int width = mc.fontRendererObj.getStringWidth(target.getDisplayName().getFormattedText()) > 70 ? 30 + mc.fontRendererObj.getStringWidth(target.getDisplayName().getFormattedText()) : 100;
 		float healthPercentage = target.getHealth() / target.getMaxHealth();
 		float barWidth = width * healthPercentage;
 		if(smoothBarWidth == 0 || lastTarget != target) {
@@ -230,15 +227,18 @@ public class TargetHUD extends Module{
     }
 	
 	private boolean isHovered(int mouseX, int mouseY) {
-		ScaledResolution sr = new ScaledResolution(mc);
+	    ScaledResolution sr = new ScaledResolution(mc);
+	    int scaleFactor = sr.getScaleFactor();
 	    int screenX = sr.getScaledWidth() / 2;
 	    int screenY = sr.getScaledHeight() / 2;
-		int x = screenX + (offsetX / 2);
-	    int y = screenY - (offsetY / 2);
-		int height = 40;
-		int width = 100;
-		mouseY = mc.displayHeight - mouseY;
-	    return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
+	    int buttonX = screenX + (offsetX / 2);
+	    int buttonY = screenY - (offsetY / 2);
+	    int buttonWidth = 100;
+	    int buttonHeight = 40;
+	    int adjustedMouseY = mc.displayHeight - mouseY;
+	    return mouseX >= buttonX * scaleFactor && mouseX <= (buttonX + buttonWidth) * scaleFactor
+	        && adjustedMouseY >= buttonY * scaleFactor && adjustedMouseY <= (buttonY + buttonHeight) * scaleFactor;
 	}
+
 
 }

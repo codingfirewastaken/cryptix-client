@@ -72,7 +72,7 @@ public class Panel {
 		            currentHeight = 0;
 		        }
 		    }
-		    RenderUtils.drawRoundedRectangle(x, y, x + width, (float) (startY + currentHeight + 6), 12, 0xFF232424);
+		    RenderUtils.drawRoundedRectangle(x, y, x + width, (float) (startY + currentHeight + 6), Client.instance.moduleManager.clickGUI.square.getBoolean() ? 0 : 12, 0xFF232424);
 		    for (ModuleButton et : Elements) {
 		        int etheight = (int) et.height;
 		        int startYI = (int) startY;
@@ -83,11 +83,11 @@ public class Panel {
 		        startY += et.height + 4 + et.settHeight;
 		    }
 			Gui.drawRect(x, y + 3, x + width, y + height, 0xFF181919);
-			RenderUtils.drawRoundedRectangle(x, y - 2, x + width, y + height, 12, 0xFF181919);
+			RenderUtils.drawRoundedRectangle(x, y - 2, x + width, y + height, Client.instance.moduleManager.clickGUI.square.getBoolean() ? 0 : 12, 0xFF181919);
 		}else {
 			currentHeight = Utils.lerp((float) currentHeight, (float) 0, 0.05F);
-			RenderUtils.drawRoundedRectangle(x, y, x + width, (float) (startY + currentHeight + 1), 12, 0xFF232424);
-			RenderUtils.drawRoundedRectangle(x, y - 2, x + width, y + height + 2, 12, 0xFF181919);
+			RenderUtils.drawRoundedRectangle(x, y, x + width, (float) (startY + currentHeight + 1), Client.instance.moduleManager.clickGUI.square.getBoolean() ? 0 : 12, 0xFF232424);
+			RenderUtils.drawRoundedRectangle(x, y - 2, x + width, y + height + 2, Client.instance.moduleManager.clickGUI.square.getBoolean() ? 0 : 12, 0xFF181919);
 		}
 		FontUtil.drawStringWithShadow(title, x + (width / 2) - (FontUtil.getStringWidth(title) / 2), (int) (y + (height / 2) - (FontUtil.getFontHeight() / 2)), -1);
 	}

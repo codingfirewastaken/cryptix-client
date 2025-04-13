@@ -118,6 +118,8 @@ public abstract class EntityPlayer extends EntityLivingBase
     private final GameProfile gameProfile;
     private boolean hasReducedDebug = false;
     public EntityFishHook fishEntity;
+    public boolean swing;
+    public float startSwingProgress;
 
     public EntityPlayer(World worldIn, GameProfile gameProfileIn)
     {

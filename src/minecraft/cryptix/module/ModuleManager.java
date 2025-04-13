@@ -15,13 +15,16 @@ public class ModuleManager {
 	private static ArrayList<Module> modules = new ArrayList<Module>();
 	public Criticals criticals;
 	public KillAura killAura;
+	public AutoLogin autologin;
 	public PlayerCrasher playerCrasher;
+	public NoSlow noslow;
 	public Sprint sprint;
 	public AntiVoid antiVoid;
 	public BedNuker bedNuker;
 	public NoFall noFall;
 	public Phase phase;
 	public SafeWalk safeWalk;
+	public Animations aminations;
 	public ClickGUI clickGUI;
 	public SessionInfo sessionInfo;
 	
@@ -34,15 +37,17 @@ public class ModuleManager {
 		modules.add(criticals = new Criticals());
 		modules.add(killAura = new KillAura());
 		//Exploit
+		modules.add(autologin = new AutoLogin());
 		modules.add(new Disabler());
 		modules.add(new StaffDetector());
 		modules.add(playerCrasher = new PlayerCrasher());
 		//Movement
+		modules.add(new GroundSpeed());
 		modules.add(new Fly());
 		modules.add(new InvMove());
 		modules.add(new KeepSprint());
 		modules.add(new LongJump());
-		modules.add(new NoSlow());
+		modules.add(noslow = new NoSlow());
 		modules.add(new Speed());
 		modules.add(sprint = new Sprint());
 		modules.add(new Step());
@@ -53,14 +58,16 @@ public class ModuleManager {
 		modules.add(new ChestStealer());
 		modules.add(new FastPlace());
 		modules.add(new InvManager());
+		modules.add(new Jesus());
 		modules.add(noFall = new NoFall());
 		modules.add(phase = new Phase());
 		modules.add(safeWalk = new SafeWalk());
 		modules.add(new Scaffold());
 		//Visual
-		modules.add(new Animations());
+		modules.add(aminations = new Animations());
 		modules.add(new BedESP());
 		modules.add(new Chams());
+		modules.add(new ChestESP());
 		modules.add(clickGUI = new ClickGUI());
 		modules.add(new HUD());
 		modules.add(new ItemESP());

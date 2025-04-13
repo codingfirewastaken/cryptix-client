@@ -39,15 +39,14 @@ public class Fly extends Module{
 				if(mc.thePlayer.onGround) {
 					if(MovementUtils.isMoving()) {
 						mc.thePlayer.jump();
-						MovementUtils.strafe(0.485);
 					}
 				}else {
-					MovementUtils.strafe(0.27);
-					mc.thePlayer.motionY = 0;
-				}
-				
-				if(mc.thePlayer.offGroundTicks >= 15) {
-					this.toggle();
+					if(mc.thePlayer.offGroundTicks == 5) {
+						mc.thePlayer.setPosition(mc.thePlayer.lastTickPosX, mc.thePlayer.posY, mc.thePlayer.lastTickPosZ);
+					}
+					if(mc.thePlayer.offGroundTicks == 7) {
+						mc.thePlayer.setPosition(mc.thePlayer.lastTickPosX, mc.thePlayer.posY, mc.thePlayer.lastTickPosZ);
+					}
 				}
 		}
 	}

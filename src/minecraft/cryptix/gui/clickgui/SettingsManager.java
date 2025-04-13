@@ -18,6 +18,12 @@ public class SettingsManager {
 		this.settings.add(in);
 	}
 	
+	public void addSettings(Setting... in) {
+	    for (Setting setting : in) {
+	        this.settings.add(setting);
+	    }
+	}
+	
 	public ArrayList<Setting> getSettings(){
 		return this.settings;
 	}

@@ -17,11 +17,12 @@ import net.minecraft.network.play.client.C07PacketPlayerDigging.Action;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
+import net.minecraft.network.play.client.C09PacketHeldItemChange;
 
 public class NoSlow extends Module{
 	private Setting mode;
 	public int tick;
-	private boolean block;
+	public boolean block;
 	public NoSlow() {
 		super("NoSlow", 0, Category.MOVEMENT);
 		ArrayList<String> modes = new ArrayList<String>(Arrays.asList("Vanilla", "NCP", "BlocksMC"));
@@ -32,36 +33,24 @@ public class NoSlow extends Module{
 	public void onPreMotion() {
 		this.setDisplayName(this.getName() + this.getUppercaseSuffix(mode.getString()));
 		if(mc.thePlayer.isUsingItem()) {
-			if(tick == 1 && mode.getString().equalsIgnoreCase("BlocksMC") && Utils.holdingSword()) {
-				sendPacket(new C07PacketPlayerDigging(Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
-			}
 			if(MovementUtils.isMoving() && !mc.thePlayer.isCollidedHorizontally && !mc.thePlayer.isSneaking() && mc.gameSettings.keyBindForward.isKeyDown() && !mode.getString().equalsIgnoreCase("BlocksMC")) {
 				mc.thePlayer.setSprinting(true);
 			}
 			if(mode.getString().equalsIgnoreCase("NCP")) {
 				sendPacket(new C07PacketPlayerDigging(Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.UP));
 			}
-			if (mode.getString().equalsIgnoreCase("BlocksMC")) {
-				if(mode.getString().equalsIgnoreCase("BlocksMC")) {
-	                 int slot = -1;
-
-	                 for (int i = 1; i < 45; i++) {
-	                     ItemStack stack = mc.thePlayer.inventory.getStackInSlot(i);
-	                     if (stack == null) {
-	                         slot = i;
-	                         break;
-	                     }
-	                 }
-
-	                 if (slot != -1 && mc.thePlayer.ticksExisted % 3 == 1) {
-	                     sendPacket(new C08PacketPlayerBlockPlacement(new BlockPos(-1, -1, -1), 0, mc.thePlayer.inventory.getStackInSlot(slot), 0, 0, 0));
-	                 }
-	             }
-			}
+			if(mode.getString().equalsIgnoreCase("BlocksMC")) {
+				if(tick == 1) {
+					sendPacket(new C09PacketHeldItemChange((mc.thePlayer.inventory.currentItem + 1) % 9));
+					sendPacket(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
+					sendPacket(new C08PacketPlayerBlockPlacement(new BlockPos(-1, -1, -1), 0, mc.thePlayer.getHeldItem(), 0, 0, 0));
+				}
+            }
 			tick++;
 		 }else {
 			 tick = 0;
 		 }
+		block = false;
 	 }
 	 
 	 @Override

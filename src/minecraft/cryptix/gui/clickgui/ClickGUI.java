@@ -73,7 +73,6 @@ public class ClickGUI extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-    	alpha = (int) Utils.lerp(alpha, 100, 0.05F);
         ScaledResolution resolution = new ScaledResolution(mc);
         int backColor = new Color(0,0,0,alpha).getRGB();
         this.drawRect(0, 0, resolution.getScaledWidth(), resolution.getScaledHeight(), backColor);

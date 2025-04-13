@@ -28,6 +28,7 @@ public class NoFall extends Module{
 	
 	@Override
 	public void onPreMotion() {
+		this.setDisplayName(this.getName() + this.getUppercaseSuffix(mode.getString()));
 		if(mc.thePlayer.lastTickPosY - mc.thePlayer.posY > 0) {
 			this.fallDist += 0.3;
 		}

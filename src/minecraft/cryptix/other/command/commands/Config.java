@@ -27,9 +27,10 @@ public class Config {
                     e.printStackTrace();
                 }
             } else if(arg[0].toLowerCase().equalsIgnoreCase("load")) {
-            	if(arg[1].isEmpty() || arg[1] == null) {
-            		return;
-            	}
+            	if (arg.length < 2) {
+                    Utils.sendClientChatMessage("Usage: .config load <configname>");
+                    return;
+                }
             	File configs = new File(config, String.valueOf(arg[1]) + ".json");
                 if (configs.exists()) {
                     JsonHandler.loadMods(arg[1]);
@@ -38,9 +39,10 @@ public class Config {
                     Utils.sendClientChatMessage("Couldnt find config file: " + arg[1]);
                 }
 			} else if(arg[0].toLowerCase().equalsIgnoreCase("save")) {
-				if(arg[1].isEmpty()) {
-            		return;
-            	}
+				if (arg.length < 2) {
+	                Utils.sendClientChatMessage("Usage: .config save <configname>");
+	                return;
+	            }
 				JsonHandler.saveMods(arg[1]);
                 Utils.sendClientChatMessage("Saved config as: " + arg[1]);
 			} else if (arg[0].toLowerCase().equalsIgnoreCase("list")) {

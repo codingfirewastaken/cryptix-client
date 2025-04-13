@@ -8,10 +8,11 @@ import cryptix.module.Category;
 import cryptix.module.Module;
 
 public class ClickGUI extends Module{
-	public Setting sound;
+	public Setting sound, square;
 	public ClickGUI() {
 		super("ClickGUI", Keyboard.KEY_RSHIFT, Category.VISUAL);
 		Client.instance.settingsManager.addSetting(sound = new Setting("Sound", this, true));
+		Client.instance.settingsManager.addSetting(square = new Setting("Square", this, false));
         Client.instance.settingsManager.addSetting(new Setting("Color1 Red", this, 120, 0, 255, true));
         Client.instance.settingsManager.addSetting(new Setting("Color1 Green", this, 120, 0, 255, true));
         Client.instance.settingsManager.addSetting(new Setting("Color1 Blue", this, 120, 0, 255, true));

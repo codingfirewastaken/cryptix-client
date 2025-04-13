@@ -2,6 +2,7 @@ package cryptix.module.visual;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -17,7 +18,7 @@ import net.minecraft.client.gui.ScaledResolution;
 
 public class HUD extends Module{
 	private FontRenderer fr = mc.fontRendererObj;
-	private Setting background, lowercase, color1red, color1green, color1blue, color2red, color2green, color2blue, watermark, animation;
+	private Setting background, lowercase, color1red, color1green, color1blue, color2red, color2green, color2blue, watermark, animation, removeVisuals, outline;
 	public HUD() {
 		super("HUD", 0, Category.VISUAL);
 		Client.instance.settingsManager.addSetting(color1red = new Setting("Color1 red", this, 255, 0, 255, false));
@@ -26,11 +27,12 @@ public class HUD extends Module{
 		Client.instance.settingsManager.addSetting(color2red = new Setting("Color2 red", this, 255, 0, 255, false));
 		Client.instance.settingsManager.addSetting(color2green = new Setting("Color2 green", this, 255, 0, 255, false));
 		Client.instance.settingsManager.addSetting(color2blue = new Setting("Color2 blue", this, 255, 0, 255, false));
+		Client.instance.settingsManager.addSetting(outline = new Setting("Outline", this, "None", Arrays.asList("None", "Right", "Left")));
+		Client.instance.settingsManager.addSetting(watermark = new Setting("Watermark", this, "None", Arrays.asList("None", "Text", "Logo")));
 		Client.instance.settingsManager.addSetting(animation = new Setting("Animation", this, true));
 		Client.instance.settingsManager.addSetting(background = new Setting("Background", this, false));
 		Client.instance.settingsManager.addSetting(lowercase = new Setting("Lowercase", this, false));
-		Client.instance.settingsManager.addSetting(watermark = new Setting("Watermark", this, false));
-		
+		Client.instance.settingsManager.addSetting(removeVisuals = new Setting("Remove Visuals", this, false));
 	}
 	
 	@Override
@@ -44,7 +46,7 @@ public class HUD extends Module{
 		ArrayList<Module> mods = new ArrayList<>(Client.instance.moduleManager.getModules());
 		Collections.sort(mods, new Compare().reversed());
 		for(Module m : mods) {
-			if(!m.isToggled())
+			if(!m.isToggled() || removeVisuals.getBoolean() && m.getCategory().toString().toLowerCase().equalsIgnoreCase("visual"))
 				continue;
 			ScaledResolution sr = new ScaledResolution(mc);
 			long startTime = System.currentTimeMillis() - m.getToggleTimestamp();
@@ -58,6 +60,12 @@ public class HUD extends Module{
 			float alpha = (float) Math.min(n1, startTime / 2.0);
 			if(background.getBoolean()) {
 				Gui.drawRect(animation.getBoolean() ? n5 + 4 - alpha + n1 : n5 + 4, n4, n5 + n2, n4 + n3, 0x80000000);
+			}
+			if(outline.getString().equalsIgnoreCase("Left")) {
+				Gui.drawRect(animation.getBoolean() ? n5 + 4 - alpha + n1 - 3 : n5 + 1, n4, animation.getBoolean() ? n5 + 4 - alpha + n1 : n5 + 4, n4 + n3, isssssskoldt);
+			}
+			if(outline.getString().equalsIgnoreCase("Right")) {
+				Gui.drawRect(sr.getScaledWidth() - 1, n4, sr.getScaledWidth(), n4 + n3, isssssskoldt);
 			}
 			String moduleName = String.valueOf(String.valueOf(m.getDisplayName())) + "§7";
 			fr.drawStringWithShadow(lowercase.getBoolean() ? m.getDisplayName().toLowerCase() : moduleName, animation.getBoolean() ? n5 + 7 - alpha + n1 : xOffset - 2, yOffset * 11 + 2, isssssskoldt);

@@ -8,8 +8,10 @@ import cryptix.gui.clickgui.Setting;
 import cryptix.module.Category;
 import cryptix.module.Module;
 import cryptix.utils.MovementUtils;
+import net.minecraft.block.BlockLiquid;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.potion.Potion;
+import net.minecraft.util.BlockPos;
 
 public class Speed extends Module{
 	private Setting strafeMode, lowhopMode, speed, offset, dmgBoost;
@@ -34,13 +36,16 @@ public class Speed extends Module{
 		}
 		if(mc.thePlayer.onGround && MovementUtils.isMoving()) {
 			mc.thePlayer.jump();
-			if(mc.thePlayer.isCollidedVertically && !lowhopMode.getString().equalsIgnoreCase("Vulcan New") && !mc.thePlayer.isUsingItem()) {
+			if(mc.thePlayer.isCollidedVertically && !lowhopMode.getString().equalsIgnoreCase("Vulcan New") && !mc.thePlayer.isUsingItem() && !mc.thePlayer.isInWater() && !mc.thePlayer.isInLava()) {
 				MovementUtils.strafe(mc.thePlayer.isPotionActive(Potion.moveSpeed) ? 0.55 : 0.4 * speed.getValue() + (offset.getValue()));
 			}
 			if(lowhopMode.getString().equalsIgnoreCase("Vulcan New")) {
 				mc.thePlayer.motionX *= 1.05F;
 				mc.thePlayer.motionZ *= 1.05F;
 			}
+		}
+		if(mc.thePlayer.isInWater() || mc.thePlayer.isInLava() && mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ)).getBlock() instanceof BlockLiquid) {
+			return;
 		}
 		switch(mc.thePlayer.offGroundTicks) {
 			case 1:
@@ -52,12 +57,12 @@ public class Speed extends Module{
 					mc.thePlayer.motionZ *= 0.97F;
 				}
 				break;
-			case 6:
+			case 5:
 				if(lowhopMode.getString().equalsIgnoreCase("Vulcan")) {
 					mc.thePlayer.motionY -= 0.04;
 				}
 				break;
-			case 8:
+			case 6:
 				if(lowhopMode.getString().equalsIgnoreCase("Vulcan")) {
 					mc.thePlayer.motionY -= 0.10;
 				}
