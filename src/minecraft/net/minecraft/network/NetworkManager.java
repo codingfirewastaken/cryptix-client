@@ -272,7 +272,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
     			Client.instance.moduleManager.killAura.blinkedPackets.add(packetIn);
     			return;
     		}
-        }
+    	}
         if (this.isChannelOpen())
         {
             this.flushOutboundQueue();

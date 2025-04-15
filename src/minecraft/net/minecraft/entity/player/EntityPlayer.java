@@ -120,6 +120,8 @@ public abstract class EntityPlayer extends EntityLivingBase
     public EntityFishHook fishEntity;
     public boolean swing;
     public float startSwingProgress;
+    public int autoblockTick;
+    public int noslowTick;
 
     public EntityPlayer(World worldIn, GameProfile gameProfileIn)
     {

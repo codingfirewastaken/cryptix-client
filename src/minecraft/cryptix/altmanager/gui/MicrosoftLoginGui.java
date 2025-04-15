@@ -29,8 +29,8 @@ public class MicrosoftLoginGui extends GuiScreen{
         this.buttonList.clear();
         this.emailField = new GuiTextField(0, this.fontRendererObj, centerX - (fieldWidth / 2), baseY - 30, fieldWidth, fieldHeight);
         this.passwordField = new GuiTextField(0, this.fontRendererObj, centerX - (fieldWidth / 2), baseY, fieldWidth, fieldHeight);
-        this.emailField.setMaxStringLength(20);
-        this.passwordField.setMaxStringLength(16);
+        this.emailField.setMaxStringLength(30);
+        this.passwordField.setMaxStringLength(30);
         
         this.loginButton = new GuiButton(0, centerX - (buttonWidth / 2), baseY + fieldHeight + 10, buttonWidth, buttonHeight, "Login Microsoft");
         this.backButton = new GuiButton(1, centerX - (buttonWidth / 2), baseY + fieldHeight + 40, buttonWidth, buttonHeight, "Back");

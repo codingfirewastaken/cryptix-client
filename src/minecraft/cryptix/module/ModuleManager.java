@@ -5,6 +5,7 @@ import java.util.function.Predicate;
 
 import cryptix.Client;
 import cryptix.module.combat.*;
+import cryptix.module.config.BlocksMC;
 import cryptix.module.exploit.*;
 import cryptix.module.movement.*;
 import cryptix.module.player.*;
@@ -26,6 +27,7 @@ public class ModuleManager {
 	public SafeWalk safeWalk;
 	public Animations aminations;
 	public ClickGUI clickGUI;
+	public FreeLook freeLook;
 	public SessionInfo sessionInfo;
 	
 	public ModuleManager() {
@@ -36,7 +38,10 @@ public class ModuleManager {
 		modules.add(new Velocity());
 		modules.add(criticals = new Criticals());
 		modules.add(killAura = new KillAura());
+		//Config
+		modules.add(new BlocksMC());
 		//Exploit
+		modules.add(new AntiCheat());
 		modules.add(autologin = new AutoLogin());
 		modules.add(new Disabler());
 		modules.add(new StaffDetector());
@@ -69,6 +74,7 @@ public class ModuleManager {
 		modules.add(new Chams());
 		modules.add(new ChestESP());
 		modules.add(clickGUI = new ClickGUI());
+		modules.add(freeLook = new FreeLook());
 		modules.add(new HUD());
 		modules.add(new ItemESP());
 		modules.add(new NameTags());

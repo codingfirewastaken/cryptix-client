@@ -1,6 +1,8 @@
 package cryptix.module.player;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 
 import cryptix.Client;
 import cryptix.gui.clickgui.Setting;
@@ -20,8 +22,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Vec3i;
 
 public class BedNuker extends Module{
-	public BlockPos bedPos, lastPos;
-	private Setting range, delay, rotate, render;
+	public BlockPos bedPos, lastPos, surroundingPos;
+	private Setting range, delay, rotate, render, surrounding;
 	private double breakProgress, smoothProgress;
 	private int delayTick, alpha, backAlpha, progTick;
 	private boolean start;
@@ -30,7 +32,8 @@ public class BedNuker extends Module{
 		super("BedNuker", 0, Category.PLAYER);
 		Client.instance.settingsManager.addSetting(range = new Setting("Range", this, 3, 3, 8, false));
 		Client.instance.settingsManager.addSetting(delay = new Setting("Break Delay", this, 100, 0, 500, true));
-		Client.instance.settingsManager.addSetting(rotate = new Setting("Only Rotate at Start and Stop", this, false));
+		Client.instance.settingsManager.addSetting(surrounding = new Setting("Surroundings", this, false));
+		Client.instance.settingsManager.addSetting(rotate = new Setting("Only S/S Rotate", this, false));
 		Client.instance.settingsManager.addSetting(render = new Setting("Render Progress", this, true));
 	}
 	
@@ -41,6 +44,7 @@ public class BedNuker extends Module{
 		bedPos = null;
 		alpha = 0;
 		backAlpha = 0;
+		surroundingPos = null;
 	}
 	
 	@Override
@@ -50,16 +54,23 @@ public class BedNuker extends Module{
 	
 	@Override
 	public void onPreMotion() {
+		delayTick++;
 		bedPos = findBed();
+		if(surrounding.getBoolean() && bedPos != null && getSurrounding(bedPos) != null && delayTick > delay.getValue() / 30) {
+			surroundingPos = getSurrounding(bedPos);
+			breakBlock(surroundingPos);
+			return;
+		}else {
+			surroundingPos = null;
+		}
 		if(bedPos != null && lastPos != null && mc.theWorld.getBlockState(lastPos) != mc.theWorld.getBlockState(bedPos)) {
 			breakProgress = 0;
 		}
 		lastPos = bedPos;
-		delayTick++;
 		rotating = false;
 		if(bedPos != null && delayTick > delay.getValue() / 30) {
 			breakBlock(bedPos);
-			System.out.println(breakProgress);
+			//System.out.println(breakProgress);
 		}else {
 			breakProgress = 0;
 		}
@@ -144,10 +155,23 @@ public class BedNuker extends Module{
 	    return null;
 	}
 	
+	private BlockPos getSurrounding(BlockPos pos) {
+		for(EnumFacing facing : EnumFacing.values()) {
+			if(facing == EnumFacing.DOWN) {
+				continue;
+			}
+			BlockPos block = pos.offset(facing);
+			if(mc.theWorld.getBlockState(block).getBlock() != Blocks.air) {
+				return block;
+			}
+		}
+		return null;
+	}
+	
 	private void rotate(BlockPos bp) {
 		if(bp != null) {
 			rotating = true;
-			float[] rots = RotationUtils.getRotationsBlock(bedPos);
+			float[] rots = RotationUtils.getRotationsBlock(surrounding.getBoolean() && bedPos != null && getSurrounding(bedPos) != null ? surroundingPos : bedPos);
 			mc.thePlayer.rotationYawHead = rots[0];
 			mc.thePlayer.rotationPitchHead = rots[1];
 		}

@@ -84,7 +84,7 @@ public class KillAura extends Module{
         double c = rotationRange.getValue();
         double targetRange = Math.max(a, Math.max(b, c));
 		target = getTarget(targetRange);
-		if(target == null) {
+		if(target == null || !(isTargetInRange(target, blockRange.getValue()) && Utils.holdingSword() && !Client.instance.moduleManager.bedNuker.rotating)) {
 			blockTick = 0;
 			attack = 0;
 			if(blinking) {
@@ -109,91 +109,6 @@ public class KillAura extends Module{
             long currentTime = System.currentTimeMillis();
             int cps = minCPSi + random.nextInt(maxCPSi - minCPSi + 8);
             int delay = 1000 / cps;
-            if (isTargetInRange(target, blockRange.getValue()) && Utils.holdingSword() && !Client.instance.moduleManager.bedNuker.rotating) {
-            	if(autoblock.getString().equalsIgnoreCase("Vanilla")) {
-            		sendPacket(new C08PacketPlayerBlockPlacement(mc.thePlayer.getHeldItem()));
-            	}
-            	if(autoblock.getString().equalsIgnoreCase("BlocksMC A")) {
-            		if (blocking) {
-            			blockTick++;
-            			if(blockTick == 1) {
-            				sendPacket(new C08PacketPlayerBlockPlacement(mc.thePlayer.getHeldItem()));
-            			}
-            			if(blockTick == 3) {
-            				sendPacket(new C09PacketHeldItemChange((mc.thePlayer.inventory.currentItem + 1) % 9));
-        					sendPacket(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
-        					sendPacket(new C08PacketPlayerBlockPlacement(new BlockPos(-1, -1, -1), 0, mc.thePlayer.getHeldItem(), 0, 0, 0));
-            			}
-            			attack++;
-            		    blocking = false;
-            		} else {
-            		    currentTime = System.currentTimeMillis();
-            		    if(attack < 9) {
-            		    	if(isTargetInRange(target, attackRange.getValue())) {
-            		    		attack(target, true);
-            		    	}
-            		    }
-            		    if(attack >= 9) {
-            		    	attack = 0;
-            		    }
-            		    if(b1 ? blockTick >= 5 : blockTick >= 7) {
-            		    	b1 = random.nextBoolean();
-            		    }
-            		    blocking = true;
-            		    lastAttackTime = currentTime;
-            		    
-            		}
-            	}
-            	if(autoblock.getString().equalsIgnoreCase("BlocksMC B")) {
-            		switch(blockTick) {
-            			case 0:
-            				blocking = false;
-            				blinking = true;
-            				blinkedPackets.clear();
-            				sendPacket(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
-            				blockTick++;
-            				attack++;
-            				break;
-            			case 1:
-            				blockTick++;
-            				break;
-            			case 2:
-            				if(isTargetInRange(target, attackRange.getValue()) && b1 ? attack < 7 : attack < 5) {
-            		    		attack(target, true);
-            		    	}
-            				if(b1 ? attack >= 7 : attack >= 5) {
-            					b1 = random.nextBoolean();
-            					attack = 0;
-            				}
-            				sendPacket(new C08PacketPlayerBlockPlacement(mc.thePlayer.getHeldItem()));
-            				blinking = false;
-            				blocking = true;
-            				blockTick = 0;
-            				break;
-            		}
-            	}
-            	if(!blinking && !blinkedPackets.isEmpty()) {
-            		release();
-            	}
-            	
-            	if(autoblock.getString().equalsIgnoreCase("NCP")) {
-            		sendPacket(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
-            		blocking = false;
-            	}
-            }else {
-            	blockTick = 0;
-            	attack = 0;
-            	if(blinking) {
-            		release();
-    				blinking = false;
-    			}
-    			if(blocking || b1) {
-    				sendPacket(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
-    				blocking = false;
-    				b1 = false;
-    			}
-    			return;
-    		}
             if (isTargetInRange(target, rotationRange.getValue())) {
             	float targetYaw = RotationUtils.getRotations(target)[0];
             	float targetPitch = RotationUtils.getRotations(target)[1];
@@ -204,14 +119,89 @@ public class KillAura extends Module{
             	if(lastRotation == null) {
             		lastRotation = new float[] {mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch};
             	}
-            	float yawDifference = targetYaw - lastRotation[0];
-            	yawDifference = Math.max(-19, Math.min(19, yawDifference));
-            	mc.thePlayer.rotationYawHead = targetYaw + yawDifference;
+            	mc.thePlayer.rotationYawHead = targetYaw;
             	if(rotateBody.getBoolean()) {
-            		mc.thePlayer.renderYawOffset = targetYaw + yawDifference;
+            		mc.thePlayer.renderYawOffset = targetYaw;
             	}
             	lastRotation = new float[] {targetYaw, targetPitch};
             	mc.thePlayer.rotationPitchHead = targetPitch;
+            }
+            if (isTargetInRange(target, blockRange.getValue()) && Utils.holdingSword() && !Client.instance.moduleManager.bedNuker.rotating) {
+            	if(autoblock.getString().equalsIgnoreCase("Vanilla")) {
+            		sendPacket(new C08PacketPlayerBlockPlacement(mc.thePlayer.getHeldItem()));
+            	}
+            	if(autoblock.getString().equalsIgnoreCase("BlocksMC A")) {
+            		if (blocking) {
+            			blockTick++;
+            			blinking = true;
+            			sendPacket(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
+            			attack++;
+            		    blocking = false;
+            		} else {
+            		    if(attack < 7) {
+            		    	if(isTargetInRange(target, attackRange.getValue())) {
+            		    		attack(target, true);
+            		    	}else {
+            		    		sendPacket(new C0APacketAnimation());
+            		    	}
+            		    }
+            		    sendPacket(new C08PacketPlayerBlockPlacement(mc.thePlayer.getHeldItem()));
+        				blinking = false;
+        				release();
+            		    if(attack >= 7) {
+            		    	attack = 0;
+            		    }
+            		    blocking = true;
+            		    lastAttackTime = currentTime;
+            		    
+            		}
+            	}
+            	if(autoblock.getString().equalsIgnoreCase("BlocksMC B")) {
+            		if (blockTick == 0) {
+            			blockTick++;
+            			blinking = true;
+            			sendPacket(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
+            			attack++;
+            		    blocking = false;
+            		    blockTick++;
+            		} else if (blockTick == 1)  {
+            			if(attack < 7) {
+            		    	if(isTargetInRange(target, attackRange.getValue())) {
+            		    		attack(target, true);
+            		    	}else {
+            		    		sendPacket(new C0APacketAnimation());
+            		    	}
+            		    }
+            		    blockTick++;
+            		} else if (blockTick == 2)  {
+            		    blockTick++;
+            		} else if (blockTick == 3)  {
+            			if(attack < 7) {
+            		    	if(isTargetInRange(target, attackRange.getValue())) {
+            		    		attack(target, true);
+            		    	}else {
+            		    		sendPacket(new C0APacketAnimation());
+            		    	}
+            		    }
+            		    sendPacket(new C08PacketPlayerBlockPlacement(mc.thePlayer.getHeldItem()));
+        				blinking = false;
+        				release();
+            		    if(attack >= 7) {
+            		    	attack = 0;
+            		    }
+            		    blocking = true;
+            		    lastAttackTime = currentTime;
+            			blockTick = 0;
+            		}
+            	}
+            	if(!blinking && !blinkedPackets.isEmpty()) {
+            		release();
+            	}
+            	
+            	if(autoblock.getString().equalsIgnoreCase("NCP")) {
+            		sendPacket(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
+            		blocking = false;
+            	}
             }
             if (isTargetInRange(target, attackRange.getValue())) {
                 if (currentTime - lastAttackTime >= delay || minCPS.getValue() + maxCPS.getValue() == 40) {

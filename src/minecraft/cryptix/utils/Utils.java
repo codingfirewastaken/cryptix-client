@@ -12,6 +12,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.scoreboard.ScorePlayerTeam;
@@ -51,6 +52,10 @@ public class Utils {
 	
 	public static boolean holdingSword() {
 		return mc.thePlayer.getHeldItem() != null && mc.thePlayer.getHeldItem().getItem() instanceof ItemSword;
+	}
+	
+	public static boolean holdingBlock() {
+		return mc.thePlayer.getHeldItem() != null && mc.thePlayer.getHeldItem().getItem() instanceof ItemBlock;
 	}
 	
 	public static void sendClientChatMessage(String msg) {

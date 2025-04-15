@@ -40,10 +40,16 @@ public class NoSlow extends Module{
 				sendPacket(new C07PacketPlayerDigging(Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.UP));
 			}
 			if(mode.getString().equalsIgnoreCase("BlocksMC")) {
-				if(tick == 1) {
-					sendPacket(new C09PacketHeldItemChange((mc.thePlayer.inventory.currentItem + 1) % 9));
-					sendPacket(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
-					sendPacket(new C08PacketPlayerBlockPlacement(new BlockPos(-1, -1, -1), 0, mc.thePlayer.getHeldItem(), 0, 0, 0));
+				if(Utils.holdingSword()) {
+					if(tick == 1) {
+						sendPacket(new C07PacketPlayerDigging(Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
+					}
+				}else {
+					if(tick == 1) {
+						sendPacket(new C09PacketHeldItemChange((mc.thePlayer.inventory.currentItem + 1) % 9));
+						sendPacket(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
+						sendPacket(new C08PacketPlayerBlockPlacement(new BlockPos(-1, -1, -1), 0, mc.thePlayer.getHeldItem(), 0, 0, 0));
+					}
 				}
             }
 			tick++;

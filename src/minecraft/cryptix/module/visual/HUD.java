@@ -28,7 +28,7 @@ public class HUD extends Module{
 		Client.instance.settingsManager.addSetting(color2green = new Setting("Color2 green", this, 255, 0, 255, false));
 		Client.instance.settingsManager.addSetting(color2blue = new Setting("Color2 blue", this, 255, 0, 255, false));
 		Client.instance.settingsManager.addSetting(outline = new Setting("Outline", this, "None", Arrays.asList("None", "Right", "Left")));
-		Client.instance.settingsManager.addSetting(watermark = new Setting("Watermark", this, "None", Arrays.asList("None", "Text", "Logo")));
+		Client.instance.settingsManager.addSetting(watermark = new Setting("Watermark", this, false));
 		Client.instance.settingsManager.addSetting(animation = new Setting("Animation", this, true));
 		Client.instance.settingsManager.addSetting(background = new Setting("Background", this, false));
 		Client.instance.settingsManager.addSetting(lowercase = new Setting("Lowercase", this, false));

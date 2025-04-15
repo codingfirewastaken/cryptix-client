@@ -769,15 +769,19 @@ public class EntityRenderer implements IResourceManagerReloadListener
         }
         else if (!this.mc.gameSettings.debugCamEnable)
         {
-            GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, 1.0F, 0.0F, 0.0F);
+        	if(Client.instance.moduleManager.freeLook.isToggled()) {
+        		GlStateManager.rotate(Client.instance.moduleManager.freeLook.pitch, 1.0F, 0.0F, 0.0F);
+        	}else {
+        		GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, 1.0F, 0.0F, 0.0F);
+        	}
 
             if (entity instanceof EntityAnimal)
             {
                 EntityAnimal entityanimal = (EntityAnimal)entity;
                 GlStateManager.rotate(entityanimal.prevRotationYawHead + (entityanimal.rotationYawHead - entityanimal.prevRotationYawHead) * partialTicks + 180.0F, 0.0F, 1.0F, 0.0F);
-            }
-            else
-            {
+            }else if (Client.instance.moduleManager.freeLook.isToggled()) {
+            	GlStateManager.rotate(Client.instance.moduleManager.freeLook.yaw + 180.0F, 0.0F, 1.0F, 0.0F);
+            }else {
                 GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks + 180.0F, 0.0F, 1.0F, 0.0F);
             }
         }
@@ -1199,7 +1203,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
             Mouse.setGrabbed(true);
         }
 
-        if (this.mc.inGameHasFocus && flag)
+        if (this.mc.inGameHasFocus && flag && !Client.instance.moduleManager.freeLook.isToggled())
         {
             this.mc.mouseHelper.mouseXYChange();
             float f = this.mc.gameSettings.mouseSensitivity * 0.6F + 0.2F;

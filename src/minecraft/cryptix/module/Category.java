@@ -1,5 +1,5 @@
 package cryptix.module;
 
 public enum Category {
-	COMBAT, EXPLOIT, MOVEMENT, PLAYER, VISUAL
+	COMBAT, EXPLOIT, MOVEMENT, PLAYER, VISUAL, CONFIG
 }

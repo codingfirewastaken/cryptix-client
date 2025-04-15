@@ -40,7 +40,7 @@ public class RotationUtils {
 
         float deltaYaw = rotDistance(currentYaw, targetYaw);
 
-        float smoothing = Math.min(Math.max(Math.abs(deltaYaw) / 50f, 0.05f), 1.0f);
+        float smoothing = (float) Math.min(Math.max(Math.abs(deltaYaw) / 30f + Math.random(), 0.05f), 1.0f);
 
         currentYaw += deltaYaw * smoothing;
 
@@ -54,7 +54,7 @@ public class RotationUtils {
 
         float deltaPitch = rotDistance(currentPitch, targetPitch);
 
-        float smoothing = (float) Math.min(Math.max(Math.abs(deltaPitch) / 90f + Math.random(), 0.05f), 1.0f);
+        float smoothing = (float) Math.min(Math.max(Math.abs(deltaPitch) / 30f + Math.random(), 0.05f), 1.0f);
 
         currentPitch += deltaPitch * smoothing;
 
